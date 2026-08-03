@@ -23,7 +23,7 @@ type UpdatePlayerProfileInput = {
   number?: number;
 };
 
-export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args: any, context: any) => {
+export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args: UpdatePlayerProfileInput, context: Parameters<UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -43,9 +43,10 @@ export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, 
         ...args,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al actualizar perfil de jugador: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al actualizar perfil de jugador: ${msg}`);
   }
 };
 
@@ -56,7 +57,7 @@ type ProcessPaymentInput = {
   matchId?: string;
 };
 
-export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args: any, context: any) => {
+export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args: ProcessPaymentInput, context: Parameters<ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -90,9 +91,10 @@ export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { tic
     }
 
     return { ...payment, ticket };
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al procesar la transacción de pago: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al procesar la transacción de pago: ${msg}`);
   }
 };
 
@@ -103,7 +105,7 @@ type SubmitRefereeRatingInput = {
   comment?: string;
 };
 
-export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args: any, context: any) => {
+export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args: SubmitRefereeRatingInput, context: Parameters<SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -125,7 +127,7 @@ export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, 
     });
 
     const avg = allRatings.length > 0 
-      ? allRatings.reduce((acc: any, r: any) => acc + r.stars, 0) / allRatings.length
+      ? allRatings.reduce((acc: number, r: RefereeRating) => acc + r.stars, 0) / allRatings.length
       : 5.0;
 
     await context.entities.Referee.update({
@@ -134,9 +136,10 @@ export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, 
     });
 
     return rating;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al registrar la calificación arbitral: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al registrar la calificación arbitral: ${msg}`);
   }
 };
 
@@ -150,7 +153,7 @@ type UpdateMatchStatsInput = {
   fairPlayScore: number;
 };
 
-export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args: any, context: any) => {
+export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args: UpdateMatchStatsInput, context: Parameters<UpdateMatchStats<UpdateMatchStatsInput, PlayerStats>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -180,8 +183,9 @@ export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerSta
         matchesPlayed: { increment: 1 },
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al actualizar estadísticas del partido: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al actualizar estadísticas del partido: ${msg}`);
   }
 };

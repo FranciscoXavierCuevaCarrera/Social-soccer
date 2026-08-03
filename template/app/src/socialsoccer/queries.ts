@@ -15,7 +15,7 @@ import type {
   GetPlayerStats,
 } from "wasp/server/operations";
 
-export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args: any, context: any) => {
+export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args: unknown, context: Parameters<GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -42,13 +42,14 @@ export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: P
     }
 
     return profile;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al obtener el perfil del jugador: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener el perfil del jugador: ${msg}`);
   }
 };
 
-export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args: any, context: any) => {
+export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args: unknown, context: Parameters<GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -59,13 +60,14 @@ export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Fiel
       include: { field: true, referee: true },
       orderBy: { date: "asc" },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al obtener próximos partidos: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener próximos partidos: ${msg}`);
   }
 };
 
-export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args: any, context: any) => {
+export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args: unknown, context: Parameters<GetPaymentHistory<void, (Payment & { match: Match | null })[]>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -76,13 +78,14 @@ export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Matc
       include: { match: true },
       orderBy: { createdAt: "desc" },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al obtener historial de pagos: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener historial de pagos: ${msg}`);
   }
 };
 
-export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args: any, context: any) => {
+export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args: unknown, context: Parameters<GetPlayerStats<void, PlayerStats>>[1]) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -98,8 +101,9 @@ export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args: a
     }
 
     return profile.stats;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
-    throw new HttpError(500, `Error al obtener estadísticas del jugador: ${error.message || error}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener estadísticas del jugador: ${msg}`);
   }
 };

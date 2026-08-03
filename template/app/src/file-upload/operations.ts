@@ -130,8 +130,8 @@ const deleteFileInputSchema = z.object({
 type DeleteFileInput = z.infer<typeof deleteFileInputSchema>;
 
 export const deleteFile: DeleteFile<DeleteFileInput, File> = async (
-  rawArgs: any,
-  context: any,
+  rawArgs: unknown,
+  context: Parameters<DeleteFile<DeleteFileInput, File>>[1],
 ) => {
   if (!context.user) {
     throw new HttpError(401);

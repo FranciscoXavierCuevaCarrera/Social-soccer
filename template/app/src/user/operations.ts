@@ -19,7 +19,12 @@ type UpdateUserAdminByIdInput = z.infer<typeof updateUserAdminByIdInputSchema>;
 export const updateIsUserAdminById: UpdateIsUserAdminById<
   UpdateUserAdminByIdInput,
   User
-> = async (rawArgs: any, context: any) => {
+> = async (
+  rawArgs: unknown,
+  context: Parameters<
+    UpdateIsUserAdminById<UpdateUserAdminByIdInput, User>
+  >[1],
+) => {
   const { id, isAdmin } = ensureArgsSchemaOrThrowHttpError(
     updateUserAdminByIdInputSchema,
     rawArgs,
@@ -74,7 +79,12 @@ type GetPaginatedUsersInput = z.infer<typeof getPaginatorArgsSchema>;
 export const getPaginatedUsers: GetPaginatedUsers<
   GetPaginatedUsersInput,
   GetPaginatedUsersOutput
-> = async (rawArgs: any, context: any) => {
+> = async (
+  rawArgs: unknown,
+  context: Parameters<
+    GetPaginatedUsers<GetPaginatedUsersInput, GetPaginatedUsersOutput>
+  >[1],
+) => {
   if (!context.user) {
     throw new HttpError(
       401,
