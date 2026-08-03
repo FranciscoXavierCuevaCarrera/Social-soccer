@@ -100,7 +100,7 @@ export function RefereeRatingForm({
           <div>
             <textarea
               value={comment}
-              onChange={(e) => setComment((e.target as HTMLTextAreaElement).value)}
+              onChange={(e) => setComment((e.target as unknown as { value: string }).value)}
               placeholder="Escribe comentarios u observaciones adicionales sobre el arbitraje..."
               className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent focus:ring-2 focus:ring-[#0B5FA5] outline-none"
               rows={2}
