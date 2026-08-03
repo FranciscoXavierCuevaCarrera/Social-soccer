@@ -22,7 +22,7 @@ type GenerateCheckoutSessionInput = z.infer<
 export const generateCheckoutSession: GenerateCheckoutSession<
   GenerateCheckoutSessionInput,
   CheckoutSession
-> = async (rawPaymentPlanId, context) => {
+> = async (rawPaymentPlanId: any, context: any) => {
   if (!context.user) {
     throw new HttpError(
       401,
@@ -58,7 +58,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 export const getCustomerPortalUrl: GetCustomerPortalUrl<
   void,
   string | null
-> = async (_args, context) => {
+> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(
       401,

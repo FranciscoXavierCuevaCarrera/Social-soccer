@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, Activity, Target, AlertSquare, Heart, Award, Shield, CheckCircle2 } from 'lucide-react';
+import { Trophy, Activity, Target, Heart, Award, Shield, CheckCircle2 } from 'lucide-react';
 import ThemeToggle from '../client/components/ThemeToggle';
 import RefereeRatingForm from './RefereeRatingForm';
 

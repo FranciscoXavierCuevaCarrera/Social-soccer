@@ -23,7 +23,7 @@ type UpdatePlayerProfileInput = {
   number?: number;
 };
 
-export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args, context) => {
+export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -56,7 +56,7 @@ type ProcessPaymentInput = {
   matchId?: string;
 };
 
-export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args, context) => {
+export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -103,7 +103,7 @@ type SubmitRefereeRatingInput = {
   comment?: string;
 };
 
-export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args, context) => {
+export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -125,7 +125,7 @@ export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, 
     });
 
     const avg = allRatings.length > 0 
-      ? allRatings.reduce((acc, r) => acc + r.stars, 0) / allRatings.length
+      ? allRatings.reduce((acc: any, r: any) => acc + r.stars, 0) / allRatings.length
       : 5.0;
 
     await context.entities.Referee.update({
@@ -150,7 +150,7 @@ type UpdateMatchStatsInput = {
   fairPlayScore: number;
 };
 
-export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args, context) => {
+export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }

@@ -15,7 +15,7 @@ import type {
   GetPlayerStats,
 } from "wasp/server/operations";
 
-export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args, context) => {
+export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -48,7 +48,7 @@ export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: P
   }
 };
 
-export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args, context) => {
+export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -65,7 +65,7 @@ export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Fiel
   }
 };
 
-export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args, context) => {
+export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -82,7 +82,7 @@ export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Matc
   }
 };
 
-export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args, context) => {
+export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }

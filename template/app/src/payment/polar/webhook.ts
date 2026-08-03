@@ -20,7 +20,7 @@ import { updateUserCredits, updateUserSubscription } from "../user";
  * Polar requires a raw request to construct events successfully.
  */
 export const polarMiddlewareConfigFn: MiddlewareConfigFn = (
-  middlewareConfig,
+  middlewareConfig: any,
 ) => {
   middlewareConfig.delete("express.json");
   middlewareConfig.set(
@@ -32,9 +32,9 @@ export const polarMiddlewareConfigFn: MiddlewareConfigFn = (
 };
 
 export const polarWebhook: PaymentsWebhook = async (
-  request,
-  response,
-  context,
+  request: any,
+  response: any,
+  context: any,
 ) => {
   const prismaUserDelegate = context.entities.User;
   try {
