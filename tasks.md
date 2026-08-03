@@ -5,7 +5,7 @@ Este documento contiene el desglose granular de tareas técnicas para la impleme
 ---
 
 ## 📌 Estado General del Proyecto
-- **Fase Actual:** Fase 1 completada. Listo para Fase 2 (UI & Sistema de Temas).
+- **Fase Actual:** Fases 1 a 4 completadas (Configuración DB, UI Dual, Módulos Frontend, Queries & Actions con RBAC y Wasp Spec arreglado).
 - **Prototipo Oficial:** [Google Stitch UI Prototype](https://stitch.withgoogle.com/projects/11720181075081878902) (5 pantallas en Modo Oscuro `#0B5FA5` y Modo Claro `#1D3557`).
 
 ---
@@ -87,18 +87,18 @@ Este documento contiene el desglose granular de tareas técnicas para la impleme
 
 ## ⚡ Fase 4: Integración de Server Actions & Lógica Backend
 
-- [ ] **Task 4.1: Desarrollar Wasp Queries para lectura de datos**
-  - **Archivo:** `template/app/src/socialsoccer/queries.ts`
-  - **Descripción:** Implementar `getPlayerProfile`, `getUpcomingMatches`, `getPaymentHistory` y `getPlayerStats`.
+- [x] **Task 4.1: Desarrollar Wasp Queries para lectura de datos**
+  - **Archivo:** [`queries.ts`](file:///c:/Users/Yavirac%201/mi-proyecto/template/app/src/socialsoccer/queries.ts)
+  - **Descripción:** Implementar `getPlayerProfile`, `getUpcomingMatches`, `getPaymentHistory` y `getPlayerStats` con manejo de excepciones (try/catch).
 
-- [ ] **Task 4.2: Desarrollar Server Actions para mutaciones**
-  - **Archivo:** `template/app/src/socialsoccer/actions.ts`
-  - **Descripción:** Implementar `updatePlayerProfile`, `processPayment`, `submitRefereeRating` y `updateMatchStats`.
+- [x] **Task 4.2: Desarrollar Server Actions para mutaciones**
+  - **Archivo:** [`actions.ts`](file:///c:/Users/Yavirac%201/mi-proyecto/template/app/src/socialsoccer/actions.ts)
+  - **Descripción:** Implementar `updatePlayerProfile`, `processPayment`, `submitRefereeRating` y `updateMatchStats` con protección RBAC (`isAdmin`) y manejo de excepciones en Prisma.
 
-- [ ] **Task 4.3: Configurar rutas y entidades en Wasp Main**
-  - **Archivo:** [`main.wasp.ts`](file:///c:/Users/Yavirac%201/mi-proyecto/template/app/main.wasp.ts)
-  - **Descripción:** Registrar rutas `/identity`, `/matches`, `/payments`, `/stats`, y declarar acciones, queries y entidades.
+- [x] **Task 4.3: Configurar rutas y entidades en Wasp Main**
+  - **Archivo:** [`main.wasp.ts`](file:///c:/Users/Yavirac%201/mi-proyecto/template/app/main.wasp.ts) y [`socialsoccer.wasp.ts`](file:///c:/Users/Yavirac%201/mi-proyecto/template/app/src/socialsoccer/socialsoccer.wasp.ts)
+  - **Descripción:** Registrar rutas `/identity`, `/matches`, `/payments`, `/stats`, modularizar `socialsoccerSpec` y corregir configuración TypeScript (`tsconfig.wasp.json`).
 
-- [ ] **Task 4.4: Pruebas de integración, linters y build final**
+- [x] **Task 4.4: Pruebas de integración, linters y build final**
   - **Comandos:** `npm run lint` y `npx wasp build`
-  - **Descripción:** Validar sintaxis, tipos y correcto despliegue del MVP.
+  - **Descripción:** Validar sintaxis, tipos y correcto despliegue del MVP SocialSoccer.

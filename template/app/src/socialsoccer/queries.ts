@@ -17,69 +17,89 @@ import type {
 
 export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args, context) => {
   if (!context.user) {
-    throw new HttpError(401, "User is not authenticated");
+    throw new HttpError(401, "Usuario no autenticado");
   }
 
-  let profile = await context.entities.PlayerProfile.findUnique({
-    where: { userId: context.user.id },
-    include: { stats: true }
-  });
-
-  if (!profile) {
-    profile = await context.entities.PlayerProfile.create({
-      data: {
-        userId: context.user.id,
-        fullName: context.user.username || context.user.email || "Jugador",
-        stats: {
-          create: {
-            goals: 0, assists: 0, yellowCards: 0, redCards: 0, fairPlayScore: 100, matchesPlayed: 0
-          }
-        }
-      },
+  try {
+    let profile = await context.entities.PlayerProfile.findUnique({
+      where: { userId: context.user.id },
       include: { stats: true }
     });
-  }
 
-  return profile;
+    if (!profile) {
+      profile = await context.entities.PlayerProfile.create({
+        data: {
+          userId: context.user.id,
+          fullName: context.user.username || context.user.email || "Jugador",
+          stats: {
+            create: {
+              goals: 0, assists: 0, yellowCards: 0, redCards: 0, fairPlayScore: 100, matchesPlayed: 0
+            }
+          }
+        },
+        include: { stats: true }
+      });
+    }
+
+    return profile;
+  } catch (error: any) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(500, `Error al obtener el perfil del jugador: ${error.message || error}`);
+  }
 };
 
 export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args, context) => {
   if (!context.user) {
-    throw new HttpError(401, "User is not authenticated");
+    throw new HttpError(401, "Usuario no autenticado");
   }
 
-  return context.entities.Match.findMany({
-    where: { status: "SCHEDULED" },
-    include: { field: true, referee: true },
-    orderBy: { date: "asc" },
-  });
+  try {
+    return await context.entities.Match.findMany({
+      where: { status: "SCHEDULED" },
+      include: { field: true, referee: true },
+      orderBy: { date: "asc" },
+    });
+  } catch (error: any) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(500, `Error al obtener próximos partidos: ${error.message || error}`);
+  }
 };
 
 export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args, context) => {
   if (!context.user) {
-    throw new HttpError(401, "User is not authenticated");
+    throw new HttpError(401, "Usuario no autenticado");
   }
 
-  return context.entities.Payment.findMany({
-    where: { userId: context.user.id },
-    include: { match: true },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    return await context.entities.Payment.findMany({
+      where: { userId: context.user.id },
+      include: { match: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error: any) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(500, `Error al obtener historial de pagos: ${error.message || error}`);
+  }
 };
 
 export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args, context) => {
   if (!context.user) {
-    throw new HttpError(401, "User is not authenticated");
+    throw new HttpError(401, "Usuario no autenticado");
   }
 
-  const profile = await context.entities.PlayerProfile.findUnique({
-    where: { userId: context.user.id },
-    include: { stats: true }
-  });
+  try {
+    const profile = await context.entities.PlayerProfile.findUnique({
+      where: { userId: context.user.id },
+      include: { stats: true }
+    });
 
-  if (!profile || !profile.stats) {
-    throw new HttpError(404, "Player stats not found");
+    if (!profile || !profile.stats) {
+      throw new HttpError(404, "Estadísticas de jugador no encontradas");
+    }
+
+    return profile.stats;
+  } catch (error: any) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(500, `Error al obtener estadísticas del jugador: ${error.message || error}`);
   }
-
-  return profile.stats;
 };
