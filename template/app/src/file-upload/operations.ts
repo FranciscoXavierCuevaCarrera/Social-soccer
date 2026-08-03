@@ -1,3 +1,4 @@
+import { type PrismaClient } from "@prisma/client";
 import { type File } from "wasp/entities";
 import { HttpError } from "wasp/server";
 import {
@@ -10,6 +11,13 @@ import {
 
 import * as z from "zod";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
+
+type FileOperationsContext = {
+  user?: { id: string } | null;
+  entities: {
+    File: PrismaClient["file"];
+  };
+};
 import {
   checkFileExistsInS3,
   deleteFileFromS3,
@@ -124,14 +132,14 @@ export const getDownloadFileSignedURL: GetDownloadFileSignedURL<
 };
 
 const deleteFileInputSchema = z.object({
-  id: z.string(),
+  id: z.string().nonempty(),
 });
 
 type DeleteFileInput = z.infer<typeof deleteFileInputSchema>;
 
 export const deleteFile: DeleteFile<DeleteFileInput, File> = async (
   rawArgs: unknown,
-  context: Parameters<DeleteFile<DeleteFileInput, File>>[1],
+  context: FileOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);

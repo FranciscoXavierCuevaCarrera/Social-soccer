@@ -1,3 +1,4 @@
+import { type PrismaClient } from "@prisma/client";
 import { HttpError } from "wasp/server";
 import type {
   GenerateCheckoutSession,
@@ -13,6 +14,13 @@ export type CheckoutSession = {
   sessionId: string;
 };
 
+type PaymentOperationsContext = {
+  user?: { id: string; email?: string } | null;
+  entities: {
+    User: PrismaClient["user"];
+  };
+};
+
 const generateCheckoutSessionSchema = z.nativeEnum(PaymentPlanId);
 
 type GenerateCheckoutSessionInput = z.infer<
@@ -24,9 +32,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   CheckoutSession
 > = async (
   rawPaymentPlanId: unknown,
-  context: Parameters<
-    GenerateCheckoutSession<GenerateCheckoutSessionInput, CheckoutSession>
-  >[1],
+  context: PaymentOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(
@@ -65,7 +71,7 @@ export const getCustomerPortalUrl: GetCustomerPortalUrl<
   string | null
 > = async (
   _args: unknown,
-  context: Parameters<GetCustomerPortalUrl<void, string | null>>[1],
+  context: PaymentOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(

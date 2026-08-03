@@ -1,3 +1,4 @@
+import { type PrismaClient } from "@prisma/client";
 import { HttpError } from "wasp/server";
 import type { 
   PlayerProfile, 
@@ -5,7 +6,8 @@ import type {
   Ticket,
   RefereeRating,
   PlayerStats,
-  Referee
+  Referee,
+  User
 } from "wasp/entities";
 import type {
   UpdatePlayerProfile,
@@ -13,6 +15,18 @@ import type {
   SubmitRefereeRating,
   UpdateMatchStats,
 } from "wasp/server/operations";
+
+type SocialSoccerActionContext = {
+  user?: (User & { isAdmin?: boolean }) | null;
+  entities: {
+    PlayerProfile: PrismaClient["playerProfile"];
+    Payment: PrismaClient["payment"];
+    Ticket: PrismaClient["ticket"];
+    RefereeRating: PrismaClient["refereeRating"];
+    Referee: PrismaClient["referee"];
+    PlayerStats: PrismaClient["playerStats"];
+  };
+};
 
 type UpdatePlayerProfileInput = {
   cedula?: string;
@@ -23,7 +37,7 @@ type UpdatePlayerProfileInput = {
   number?: number;
 };
 
-export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args: UpdatePlayerProfileInput, context: Parameters<UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile>>[1]) => {
+export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args: UpdatePlayerProfileInput, context: SocialSoccerActionContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -57,7 +71,7 @@ type ProcessPaymentInput = {
   matchId?: string;
 };
 
-export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args: ProcessPaymentInput, context: Parameters<ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }>>[1]) => {
+export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args: ProcessPaymentInput, context: SocialSoccerActionContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -105,7 +119,7 @@ type SubmitRefereeRatingInput = {
   comment?: string;
 };
 
-export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args: SubmitRefereeRatingInput, context: Parameters<SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating>>[1]) => {
+export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args: SubmitRefereeRatingInput, context: SocialSoccerActionContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -153,7 +167,7 @@ type UpdateMatchStatsInput = {
   fairPlayScore: number;
 };
 
-export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args: UpdateMatchStatsInput, context: Parameters<UpdateMatchStats<UpdateMatchStatsInput, PlayerStats>>[1]) => {
+export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args: UpdateMatchStatsInput, context: SocialSoccerActionContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }

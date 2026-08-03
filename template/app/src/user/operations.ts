@@ -1,4 +1,4 @@
-import { type Prisma } from "@prisma/client";
+import { type Prisma, type PrismaClient } from "@prisma/client";
 import { type User } from "wasp/entities";
 import { HttpError, prisma } from "wasp/server";
 import {
@@ -8,6 +8,13 @@ import {
 import * as z from "zod";
 import { SubscriptionStatus } from "../payment/plans";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
+
+type UserOperationsContext = {
+  user?: User | null;
+  entities: {
+    User: PrismaClient["user"];
+  };
+};
 
 const updateUserAdminByIdInputSchema = z.object({
   id: z.string().nonempty(),
@@ -21,9 +28,7 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
   User
 > = async (
   rawArgs: unknown,
-  context: Parameters<
-    UpdateIsUserAdminById<UpdateUserAdminByIdInput, User>
-  >[1],
+  context: UserOperationsContext,
 ) => {
   const { id, isAdmin } = ensureArgsSchemaOrThrowHttpError(
     updateUserAdminByIdInputSchema,
@@ -81,9 +86,7 @@ export const getPaginatedUsers: GetPaginatedUsers<
   GetPaginatedUsersOutput
 > = async (
   rawArgs: unknown,
-  context: Parameters<
-    GetPaginatedUsers<GetPaginatedUsersInput, GetPaginatedUsersOutput>
-  >[1],
+  context: UserOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(
