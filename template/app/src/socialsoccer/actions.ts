@@ -6,7 +6,6 @@ import type {
   Ticket,
   RefereeRating,
   PlayerStats,
-  Referee,
   User
 } from "wasp/entities";
 import type {

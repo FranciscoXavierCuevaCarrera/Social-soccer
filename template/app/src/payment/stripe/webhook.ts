@@ -15,7 +15,7 @@ import { stripeClient } from "./stripeClient";
  * Stripe requires a raw request to construct events successfully.
  */
 export const stripeMiddlewareConfigFn: MiddlewareConfigFn = (
-  middlewareConfig: Parameters<MiddlewareConfigFn>[0],
+  middlewareConfig: { delete: (key: string) => void; set: (key: string, val: any) => void },
 ) => {
   middlewareConfig.delete("express.json");
   middlewareConfig.set(
@@ -28,7 +28,7 @@ export const stripeMiddlewareConfigFn: MiddlewareConfigFn = (
 export const stripeWebhook: PaymentsWebhook = async (
   request: express.Request,
   response: express.Response,
-  context: Parameters<PaymentsWebhook>[2],
+  context: { entities: { User: PrismaClient["user"] } },
 ) => {
   const prismaUserDelegate = context.entities.User;
   try {

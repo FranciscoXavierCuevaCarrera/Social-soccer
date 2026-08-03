@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, CloudRain, MapPin, User, AlertTriangle, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Calendar, CloudRain, MapPin, User, AlertTriangle, Clock } from 'lucide-react';
 import ThemeToggle from '../client/components/ThemeToggle';
 
 export function MatchesPage() {

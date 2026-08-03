@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreditCard, DollarSign, Ticket, CheckCircle2, History, QrCode, ArrowUpRight } from 'lucide-react';
+import { CreditCard, Ticket, CheckCircle2, History, QrCode } from 'lucide-react';
 import ThemeToggle from '../client/components/ThemeToggle';
 
 export function PaymentsPage() {

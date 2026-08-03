@@ -7,7 +7,6 @@ import type {
   Payment,
   Field,
   Referee,
-  Ticket,
   User
 } from "wasp/entities";
 import type {
