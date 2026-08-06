@@ -18,7 +18,7 @@ import {
 export const lemonSqueezyWebhook: PaymentsWebhook = async (
   request: express.Request,
   response: express.Response,
-  context: Parameters<PaymentsWebhook>[2],
+  context: { entities: { User: PrismaClient["user"] } },
 ) => {
   try {
     const rawRequestBody = parseRequestBody(request);
@@ -49,7 +49,7 @@ export const lemonSqueezyWebhook: PaymentsWebhook = async (
     }
 
     return response.status(200).json({ received: true });
-  } catch (err: unknown) {
+  } catch (err: any) {
     if (err instanceof UnhandledWebhookEventError) {
       console.error(err.message);
       return response.status(422).json({ error: err.message });
@@ -85,7 +85,7 @@ function parseRequestBody(request: express.Request): string {
 }
 
 export const lemonSqueezyMiddlewareConfigFn: MiddlewareConfigFn = (
-  middlewareConfig: Parameters<MiddlewareConfigFn>[0],
+  middlewareConfig: { delete: (name: string) => void; set: (name: string, value: any) => void },
 ) => {
   // We need to delete the default 'express.json' middleware and replace it with 'express.raw' middleware
   // because webhook data in the body of the request as raw JSON, not as JSON in the body of the request.
