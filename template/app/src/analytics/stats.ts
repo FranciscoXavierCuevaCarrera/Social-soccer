@@ -1,3 +1,4 @@
+import { type PrismaClient } from "@prisma/client";
 import { type DailyStats } from "wasp/entities";
 import { type CalculateDailyStatsJob } from "wasp/server/jobs";
 import {
@@ -8,6 +9,15 @@ import {
 import { paymentProcessor } from "../payment/paymentProcessor";
 import { SubscriptionStatus } from "../payment/plans";
 
+type CalculateDailyStatsJobContext = {
+  entities: {
+    DailyStats: PrismaClient["dailyStats"];
+    User: PrismaClient["user"];
+    PageViewSource: PrismaClient["pageViewSource"];
+    Logs: PrismaClient["logs"];
+  };
+};
+
 export type DailyStatsProps = {
   dailyStats?: DailyStats;
   weeklyStats?: DailyStats[];
@@ -17,7 +27,7 @@ export type DailyStatsProps = {
 export const calculateDailyStatsJob: CalculateDailyStatsJob<
   never,
   void
-> = async (_args, context) => {
+> = async (_args: unknown, context: CalculateDailyStatsJobContext) => {
   const nowUTC = new Date(Date.now());
   nowUTC.setUTCHours(0, 0, 0, 0);
 

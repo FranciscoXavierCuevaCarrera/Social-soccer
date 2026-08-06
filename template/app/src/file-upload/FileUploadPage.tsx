@@ -7,7 +7,7 @@ import {
   getDownloadFileSignedURL,
   useQuery,
 } from "wasp/client/operations";
-import type { File } from "wasp/entities";
+import type { File as FileEntity } from "wasp/entities";
 
 import { Download, Trash } from "lucide-react";
 import { Alert, AlertDescription } from "../client/components/ui/alert";
@@ -30,10 +30,10 @@ import { uploadFileWithProgress, validateFile } from "./fileUploading";
 import { ALLOWED_FILE_TYPES } from "./validation";
 
 export function FileUploadPage() {
-  const [fileKeyForS3, setFileKeyForS3] = useState<File["s3Key"]>("");
+  const [fileKeyForS3, setFileKeyForS3] = useState<FileEntity["s3Key"]>("");
   const [uploadProgressPercent, setUploadProgressPercent] = useState<number>(0);
   const [fileToDelete, setFileToDelete] = useState<Pick<
-    File,
+    FileEntity,
     "id" | "s3Key" | "name"
   > | null>(null);
 
@@ -56,7 +56,7 @@ export function FileUploadPage() {
   useEffect(() => {
     if (fileKeyForS3.length > 0) {
       refetchDownloadUrl()
-        .then((urlQuery) => {
+        .then((urlQuery: any) => {
           switch (urlQuery.status) {
             case "error":
               console.error("Error fetching download URL", urlQuery.error);
@@ -81,11 +81,7 @@ export function FileUploadPage() {
     try {
       e.preventDefault();
 
-      const formElement = e.target;
-      if (!(formElement instanceof HTMLFormElement)) {
-        throw new Error("Event target is not a form element");
-      }
-
+      const formElement = e.target as HTMLFormElement;
       const formData = new FormData(formElement);
       const formDataFileUpload = formData.get("file-upload");
 
@@ -142,7 +138,7 @@ export function FileUploadPage() {
     }
   };
 
-  const handleDelete = async ({ id, name }: Pick<File, "id" | "name">) => {
+  const handleDelete = async ({ id, name }: Pick<FileEntity, "id" | "name">) => {
     try {
       await deleteFile({ id });
       toast({
@@ -236,7 +232,7 @@ export function FileUploadPage() {
                 allUserFiles.data.length > 0 &&
                 !allUserFiles.isLoading ? (
                   <div className="space-y-3">
-                    {allUserFiles.data.map((file: File) => (
+                    {allUserFiles.data.map((file: FileEntity) => (
                       <Card key={file.s3Key} className="p-4">
                         <div
                           className={cn(

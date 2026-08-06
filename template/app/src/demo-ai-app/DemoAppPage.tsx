@@ -198,7 +198,7 @@ function NewTaskForm({
             className="flex-1"
             placeholder="Enter task description"
             value={description}
-            onChange={(e) => setDescription(e.currentTarget.value)}
+            onChange={(e) => setDescription((e.target as unknown as { value: string }).value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSubmit();
@@ -248,7 +248,7 @@ function NewTaskForm({
                   max={24}
                   className="min-w-28 text-center"
                   value={todaysHours}
-                  onChange={(e) => setTodaysHours(+e.currentTarget.value)}
+                  onChange={(e) => setTodaysHours(+(e.target as unknown as { value: string }).value)}
                 />
               </div>
             </div>
@@ -304,7 +304,7 @@ function Todo({ id, isDone, description, time }: TodoProps) {
   const handleTimeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await updateTask({
       id,
-      time: e.currentTarget.value,
+      time: (e.target as unknown as { value: string }).value,
     });
   };
 

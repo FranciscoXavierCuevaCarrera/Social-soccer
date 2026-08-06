@@ -1,4 +1,4 @@
-import type { PrismaPromise } from "@prisma/client";
+import type { PrismaClient, PrismaPromise } from "@prisma/client";
 import OpenAI from "openai";
 import type { GptResponse, Task, User } from "wasp/entities";
 import { env, HttpError, prisma } from "wasp/server";
@@ -15,6 +15,15 @@ import { SubscriptionStatus } from "../payment/plans";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
 import { GeneratedSchedule, generatedScheduleSchema } from "./schedule";
 
+type DemoAiOperationsContext = {
+  user?: (User & { isAdmin?: boolean }) | null;
+  entities: {
+    GptResponse: PrismaClient["gptResponse"];
+    Task: PrismaClient["task"];
+    User: PrismaClient["user"];
+  };
+};
+
 const openAi = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
 //#region Actions
@@ -27,7 +36,7 @@ type GenerateGptResponseInput = z.infer<typeof generateGptResponseInputSchema>;
 export const generateGptResponse: GenerateGptResponse<
   GenerateGptResponseInput,
   GeneratedSchedule
-> = async (rawArgs, context) => {
+> = async (rawArgs: unknown, context: DemoAiOperationsContext) => {
   if (!context.user) {
     throw new HttpError(
       401,
@@ -112,8 +121,8 @@ const createTaskInputSchema = z.object({
 type CreateTaskInput = z.infer<typeof createTaskInputSchema>;
 
 export const createTask: CreateTask<CreateTaskInput, Task> = async (
-  rawArgs,
-  context,
+  rawArgs: unknown,
+  context: DemoAiOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -143,8 +152,8 @@ const updateTaskInputSchema = z.object({
 type UpdateTaskInput = z.infer<typeof updateTaskInputSchema>;
 
 export const updateTask: UpdateTask<UpdateTaskInput, Task> = async (
-  rawArgs,
-  context,
+  rawArgs: unknown,
+  context: DemoAiOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -178,8 +187,8 @@ const deleteTaskInputSchema = z.object({
 type DeleteTaskInput = z.infer<typeof deleteTaskInputSchema>;
 
 export const deleteTask: DeleteTask<DeleteTaskInput, Task> = async (
-  rawArgs,
-  context,
+  rawArgs: unknown,
+  context: DemoAiOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -205,8 +214,8 @@ export const deleteTask: DeleteTask<DeleteTaskInput, Task> = async (
 
 //#region Queries
 export const getGptResponses: GetGptResponses<void, GptResponse[]> = async (
-  _args,
-  context,
+  _args: unknown,
+  context: DemoAiOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -221,8 +230,8 @@ export const getGptResponses: GetGptResponses<void, GptResponse[]> = async (
 };
 
 export const getAllTasksByUser: GetAllTasksByUser<void, Task[]> = async (
-  _args,
-  context,
+  _args: unknown,
+  context: DemoAiOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);

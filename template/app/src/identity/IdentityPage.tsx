@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { QrCode, Shield, UserCheck, RefreshCw, Copy, Check, Award, AlertCircle } from 'lucide-react';
+import { QrCode, Shield, UserCheck, Copy, Check, Award, AlertCircle } from 'lucide-react';
 import ThemeToggle from '../client/components/ThemeToggle';
 
 export function IdentityPage() {
   const [copied, setCopied] = useState(false);
-  const [passStatus, setPassStatus] = useState<'ACTIVE' | 'PENDING_TRANSFER' | 'LOCKED'>('ACTIVE');
+  const [passStatus] = useState<'ACTIVE' | 'PENDING_TRANSFER' | 'LOCKED'>('ACTIVE');
 
   const playerInfo = {
     fullName: 'Mateo Sebastían Silva',
@@ -18,7 +18,7 @@ export function IdentityPage() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(playerInfo.qrToken);
+    (navigator as unknown as { clipboard: { writeText: (text: string) => Promise<void> } }).clipboard.writeText(playerInfo.qrToken);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

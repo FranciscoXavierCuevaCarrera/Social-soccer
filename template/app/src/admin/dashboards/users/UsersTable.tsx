@@ -107,7 +107,7 @@ export function UsersTable() {
                 id="email-filter"
                 placeholder="dude@example.com"
                 onChange={(e) => {
-                  const value = e.currentTarget.value;
+                  const value = (e.target as unknown as { value: string }).value;
                   setEmailFilter(value === "" ? undefined : value);
                 }}
               />
@@ -225,7 +225,7 @@ export function UsersTable() {
                   defaultValue={currentPage}
                   max={data?.totalPages}
                   onChange={(e) => {
-                    const value = parseInt(e.currentTarget.value);
+                    const value = parseInt((e.target as unknown as { value: string }).value);
                     if (
                       data?.totalPages &&
                       value <= data?.totalPages &&
@@ -285,7 +285,7 @@ export function UsersTable() {
         {isLoading && <LoadingSpinner />}
         {!!data?.users &&
           data?.users?.length > 0 &&
-          data.users.map((user) => (
+          data.users.map((user: any) => (
             <div
               key={user.id}
               className="py-4.5 grid grid-cols-9 gap-4 px-4 md:px-6"

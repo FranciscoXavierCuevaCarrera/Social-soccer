@@ -11,15 +11,15 @@ const emailDataSchema = z.object({
 });
 
 export const getEmailUserFields = defineUserSignupFields({
-  email: (data) => {
+  email: (data: unknown) => {
     const emailData = emailDataSchema.parse(data);
     return emailData.email;
   },
-  username: (data) => {
+  username: (data: unknown) => {
     const emailData = emailDataSchema.parse(data);
     return emailData.email;
   },
-  isAdmin: (data) => {
+  isAdmin: (data: unknown) => {
     const emailData = emailDataSchema.parse(data);
     return isAdminEmail(emailData.email);
   },
@@ -43,15 +43,15 @@ const githubDataSchema = z.object({
 });
 
 export const getGitHubUserFields = defineUserSignupFields({
-  email: (data) => {
+  email: (data: unknown) => {
     const githubData = githubDataSchema.parse(data);
     return getGithubEmailInfo(githubData).email;
   },
-  username: (data) => {
+  username: (data: unknown) => {
     const githubData = githubDataSchema.parse(data);
     return githubData.profile.login;
   },
-  isAdmin: (data) => {
+  isAdmin: (data: unknown) => {
     const githubData = githubDataSchema.parse(data);
     const emailInfo = getGithubEmailInfo(githubData);
     if (!emailInfo.verified) {
@@ -83,15 +83,15 @@ const googleDataSchema = z.object({
 });
 
 export const getGoogleUserFields = defineUserSignupFields({
-  email: (data) => {
+  email: (data: unknown) => {
     const googleData = googleDataSchema.parse(data);
     return googleData.profile.email;
   },
-  username: (data) => {
+  username: (data: unknown) => {
     const googleData = googleDataSchema.parse(data);
     return googleData.profile.email;
   },
-  isAdmin: (data) => {
+  isAdmin: (data: unknown) => {
     const googleData = googleDataSchema.parse(data);
     if (!googleData.profile.email_verified) {
       return false;
@@ -115,7 +115,7 @@ const discordDataSchema = z.object({
 });
 
 export const getDiscordUserFields = defineUserSignupFields({
-  email: (data) => {
+  email: (data: unknown) => {
     const discordData = discordDataSchema.parse(data);
     // Users need to have an email for payment processing.
     if (!discordData.profile.email) {
@@ -125,11 +125,11 @@ export const getDiscordUserFields = defineUserSignupFields({
     }
     return discordData.profile.email;
   },
-  username: (data) => {
+  username: (data: unknown) => {
     const discordData = discordDataSchema.parse(data);
     return discordData.profile.username;
   },
-  isAdmin: (data) => {
+  isAdmin: (data: unknown) => {
     const discordData = discordDataSchema.parse(data);
     if (!discordData.profile.email || !discordData.profile.verified) {
       return false;

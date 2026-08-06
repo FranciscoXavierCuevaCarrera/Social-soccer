@@ -14,7 +14,7 @@ type DailyStatsValues = {
 export const getDailyStats: GetDailyStats<
   void,
   DailyStatsValues | undefined
-> = async (_args, context) => {
+> = async (_args: any, context: any) => {
   if (!context.user) {
     throw new HttpError(
       401,

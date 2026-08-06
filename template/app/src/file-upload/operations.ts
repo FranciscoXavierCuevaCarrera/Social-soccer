@@ -40,7 +40,7 @@ export const createFileUploadUrl: CreateFileUploadUrl<
     s3UploadFields: Record<string, string>;
     s3Key: string;
   }
-> = async (rawArgs, context) => {
+> = async (rawArgs: unknown, context: FileOperationsContext) => {
   if (!context.user) {
     throw new HttpError(401);
   }
@@ -66,8 +66,8 @@ const addFileToDbInputSchema = z.object({
 type AddFileToDbInput = z.infer<typeof addFileToDbInputSchema>;
 
 export const addFileToDb: AddFileToDb<AddFileToDbInput, File> = async (
-  rawArgs,
-  context,
+  rawArgs: unknown,
+  context: FileOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -94,8 +94,8 @@ export const addFileToDb: AddFileToDb<AddFileToDbInput, File> = async (
 };
 
 export const getAllFilesByUser: GetAllFilesByUser<void, File[]> = async (
-  _args,
-  context,
+  _args: unknown,
+  context: FileOperationsContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -123,7 +123,7 @@ type GetDownloadFileSignedURLInput = z.infer<
 export const getDownloadFileSignedURL: GetDownloadFileSignedURL<
   GetDownloadFileSignedURLInput,
   string
-> = async (rawArgs) => {
+> = async (rawArgs: unknown) => {
   const { s3Key } = ensureArgsSchemaOrThrowHttpError(
     getDownloadFileSignedURLInputSchema,
     rawArgs,

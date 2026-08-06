@@ -5,6 +5,8 @@ import {
 
 export const getVerificationEmailContent: GetVerificationEmailContentFn = ({
   verificationLink,
+}: {
+  verificationLink: string;
 }) => ({
   subject: "Verify your email",
   text: `Click the link below to verify your email: ${verificationLink}`,
@@ -16,6 +18,8 @@ export const getVerificationEmailContent: GetVerificationEmailContentFn = ({
 
 export const getPasswordResetEmailContent: GetPasswordResetEmailContentFn = ({
   passwordResetLink,
+}: {
+  passwordResetLink: string;
 }) => ({
   subject: "Password reset",
   text: `Click the link below to reset your password: ${passwordResetLink}`,
