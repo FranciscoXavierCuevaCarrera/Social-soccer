@@ -20,9 +20,16 @@ import {
 } from "../../../client/components/ui/select";
 import { Switch } from "../../../client/components/ui/switch";
 import { useDebounce } from "../../../client/hooks/useDebounce";
-import { SubscriptionStatus } from "../../../payment/plans";
 import { LoadingSpinner } from "../../layout/LoadingSpinner";
 import { DropdownEditDelete } from "./DropdownEditDelete";
+
+const SubscriptionStatus = {
+  PastDue: "past_due",
+  CancelAtPeriodEnd: "cancel_at_period_end",
+  Active: "active",
+  Deleted: "deleted",
+} as const;
+type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
 
 function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
   const { data: currentUser } = useAuth();
@@ -273,7 +280,7 @@ export function UsersTable() {
             <p className="font-medium">Subscription Status</p>
           </div>
           <div className="col-span-2 flex items-center">
-            <p className="font-medium">Stripe ID</p>
+            <p className="font-medium">Payment Customer ID</p>
           </div>
           <div className="col-span-1 flex items-center">
             <p className="font-medium">Is Admin</p>

@@ -17,10 +17,7 @@ import { CookieConsentBanner } from "./components/cookie-consent/Banner";
 export function App() {
   const location = useLocation();
   const isMarketingPage = useMemo(() => {
-    return (
-      location.pathname === routes.LandingPageRoute.to ||
-      location.pathname === routes.PricingPageRoute.to
-    );
+    return location.pathname === routes.LandingPageRoute.to;
   }, [location]);
 
   const navigationItems = isMarketingPage

@@ -6,8 +6,6 @@ import {
   getSources,
 } from "./providers/plausibleAnalyticsUtils";
 // import { getDailyPageViews, getSources } from './providers/googleAnalyticsUtils';
-import { paymentProcessor } from "../payment/paymentProcessor";
-import { SubscriptionStatus } from "../payment/plans";
 
 type CalculateDailyStatsJobContext = {
   entities: {
@@ -44,11 +42,9 @@ export const calculateDailyStatsJob: CalculateDailyStatsJob<
     });
 
     const userCount = await context.entities.User.count({});
-    // users can have paid but canceled subscriptions which terminate at the end of the period
-    // we don't want to count those users as current paying users
     const paidUserCount = await context.entities.User.count({
       where: {
-        subscriptionStatus: SubscriptionStatus.Active,
+        subscriptionStatus: "active",
       },
     });
 
@@ -59,7 +55,7 @@ export const calculateDailyStatsJob: CalculateDailyStatsJob<
       paidUserDelta -= yesterdaysStats.paidUserCount;
     }
 
-    const totalRevenue = await paymentProcessor.fetchTotalRevenue();
+    const totalRevenue = 0;
 
     const { totalViews, prevDayViewsChangePercent } = await getDailyPageViews();
 

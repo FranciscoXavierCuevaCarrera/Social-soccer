@@ -169,8 +169,8 @@ function NewTaskForm({
               altText="Go to pricing page to buy credits/subscription"
               asChild
             >
-              <Link to={routes.PricingPageRoute.to}>
-                Go to pricing page <ArrowRight className="ml-1 h-4 w-4" />
+              <Link to={routes.PaymentsRoute.to}>
+                Go to payments page <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </ToastAction>
           ),

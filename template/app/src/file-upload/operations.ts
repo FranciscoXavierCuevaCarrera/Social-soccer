@@ -1,4 +1,3 @@
-import { type PrismaClient } from "@prisma/client";
 import { type File } from "wasp/entities";
 import { HttpError } from "wasp/server";
 import {
@@ -12,12 +11,6 @@ import {
 import * as z from "zod";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
 
-type FileOperationsContext = {
-  user?: { id: string } | null;
-  entities: {
-    File: PrismaClient["file"];
-  };
-};
 import {
   checkFileExistsInS3,
   deleteFileFromS3,
@@ -40,7 +33,7 @@ export const createFileUploadUrl: CreateFileUploadUrl<
     s3UploadFields: Record<string, string>;
     s3Key: string;
   }
-> = async (rawArgs: unknown, context: FileOperationsContext) => {
+> = async (rawArgs, context) => {
   if (!context.user) {
     throw new HttpError(401);
   }
@@ -66,8 +59,8 @@ const addFileToDbInputSchema = z.object({
 type AddFileToDbInput = z.infer<typeof addFileToDbInputSchema>;
 
 export const addFileToDb: AddFileToDb<AddFileToDbInput, File> = async (
-  rawArgs: unknown,
-  context: FileOperationsContext,
+  rawArgs,
+  context,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -94,8 +87,8 @@ export const addFileToDb: AddFileToDb<AddFileToDbInput, File> = async (
 };
 
 export const getAllFilesByUser: GetAllFilesByUser<void, File[]> = async (
-  _args: unknown,
-  context: FileOperationsContext,
+  _args,
+  context,
 ) => {
   if (!context.user) {
     throw new HttpError(401);
@@ -123,7 +116,7 @@ type GetDownloadFileSignedURLInput = z.infer<
 export const getDownloadFileSignedURL: GetDownloadFileSignedURL<
   GetDownloadFileSignedURLInput,
   string
-> = async (rawArgs: unknown) => {
+> = async (rawArgs) => {
   const { s3Key } = ensureArgsSchemaOrThrowHttpError(
     getDownloadFileSignedURLInputSchema,
     rawArgs,
@@ -138,8 +131,8 @@ const deleteFileInputSchema = z.object({
 type DeleteFileInput = z.infer<typeof deleteFileInputSchema>;
 
 export const deleteFile: DeleteFile<DeleteFileInput, File> = async (
-  rawArgs: unknown,
-  context: FileOperationsContext,
+  rawArgs,
+  context,
 ) => {
   if (!context.user) {
     throw new HttpError(401);

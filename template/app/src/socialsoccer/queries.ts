@@ -1,4 +1,3 @@
-import { type PrismaClient } from "@prisma/client";
 import { HttpError } from "wasp/server";
 import type { 
   PlayerProfile, 
@@ -7,7 +6,6 @@ import type {
   Payment,
   Field,
   Referee,
-  User
 } from "wasp/entities";
 import type {
   GetPlayerProfile,
@@ -16,19 +14,7 @@ import type {
   GetPlayerStats,
 } from "wasp/server/operations";
 
-type SocialSoccerQueryContext = {
-  user?: (User & { isAdmin?: boolean }) | null;
-  entities: {
-    PlayerProfile: PrismaClient["playerProfile"];
-    PlayerStats: PrismaClient["playerStats"];
-    Match: PrismaClient["match"];
-    Payment: PrismaClient["payment"];
-    Field: PrismaClient["field"];
-    Referee: PrismaClient["referee"];
-  };
-};
-
-export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args: unknown, context: SocialSoccerQueryContext) => {
+export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: PlayerStats | null }> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -62,7 +48,7 @@ export const getPlayerProfile: GetPlayerProfile<void, PlayerProfile & { stats: P
   }
 };
 
-export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args: unknown, context: SocialSoccerQueryContext) => {
+export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Field, referee: Referee | null })[]> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -80,7 +66,7 @@ export const getUpcomingMatches: GetUpcomingMatches<void, (Match & { field: Fiel
   }
 };
 
-export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args: unknown, context: SocialSoccerQueryContext) => {
+export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Match | null })[]> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -98,7 +84,7 @@ export const getPaymentHistory: GetPaymentHistory<void, (Payment & { match: Matc
   }
 };
 
-export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args: unknown, context: SocialSoccerQueryContext) => {
+export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }

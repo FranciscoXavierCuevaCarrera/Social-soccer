@@ -1,4 +1,4 @@
-import { type Prisma, type PrismaClient } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { type User } from "wasp/entities";
 import { HttpError, prisma } from "wasp/server";
 import {
@@ -6,15 +6,7 @@ import {
   type UpdateIsUserAdminById,
 } from "wasp/server/operations";
 import * as z from "zod";
-import { SubscriptionStatus } from "../payment/plans";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
-
-type UserOperationsContext = {
-  user?: User | null;
-  entities: {
-    User: PrismaClient["user"];
-  };
-};
 
 const updateUserAdminByIdInputSchema = z.object({
   id: z.string().nonempty(),
@@ -27,8 +19,8 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
   UpdateUserAdminByIdInput,
   User
 > = async (
-  rawArgs: unknown,
-  context: UserOperationsContext,
+  rawArgs,
+  context,
 ) => {
   const { id, isAdmin } = ensureArgsSchemaOrThrowHttpError(
     updateUserAdminByIdInputSchema,
@@ -45,38 +37,32 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
   if (!context.user.isAdmin) {
     throw new HttpError(
       403,
-      "Only admins are allowed to perform this operation",
+      "Only admin users are allowed to perform this operation",
     );
   }
 
   return context.entities.User.update({
-    where: { id },
-    data: { isAdmin },
+    where: {
+      id,
+    },
+    data: {
+      isAdmin,
+    },
   });
 };
 
 type GetPaginatedUsersOutput = {
-  users: Pick<
-    User,
-    | "id"
-    | "email"
-    | "username"
-    | "subscriptionStatus"
-    | "paymentProcessorUserId"
-    | "isAdmin"
-  >[];
+  users: User[];
   totalPages: number;
 };
 
 const getPaginatorArgsSchema = z.object({
-  skipPages: z.number(),
+  skipPages: z.number().optional().default(0),
   filter: z.object({
-    emailContains: z.string().nonempty().optional(),
+    emailContains: z.string().optional(),
     isAdmin: z.boolean().optional(),
-    subscriptionStatusIn: z
-      .array(z.nativeEnum(SubscriptionStatus).nullable())
-      .optional(),
-  }),
+    subscriptionStatusIn: z.array(z.string().nullable()).optional(),
+  }).optional().default({}),
 });
 
 type GetPaginatedUsersInput = z.infer<typeof getPaginatorArgsSchema>;
@@ -85,8 +71,8 @@ export const getPaginatedUsers: GetPaginatedUsers<
   GetPaginatedUsersInput,
   GetPaginatedUsersOutput
 > = async (
-  rawArgs: unknown,
-  context: UserOperationsContext,
+  rawArgs,
+  context,
 ) => {
   if (!context.user) {
     throw new HttpError(
@@ -108,14 +94,14 @@ export const getPaginatedUsers: GetPaginatedUsers<
       subscriptionStatusIn: subscriptionStatus,
       emailContains,
       isAdmin,
-    },
+    } = {},
   } = ensureArgsSchemaOrThrowHttpError(getPaginatorArgsSchema, rawArgs);
 
   const includeUnsubscribedUsers = !!subscriptionStatus?.some(
     (status) => status === null,
   );
   const desiredSubscriptionStatuses = subscriptionStatus?.filter(
-    (status) => status !== null,
+    (status): status is string => status !== null,
   );
 
   const pageSize = 10;

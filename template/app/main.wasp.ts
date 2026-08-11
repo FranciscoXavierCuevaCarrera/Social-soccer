@@ -12,7 +12,6 @@ import { authConfig, authSpec } from "./src/auth/auth.wasp";
 import { head } from "./src/client/head.wasp";
 import { demoAiAppSpec } from "./src/demo-ai-app/demo-ai-app.wasp";
 import { fileUploadSpec } from "./src/file-upload/file-upload.wasp";
-import { paymentSpec } from "./src/payment/payment.wasp";
 import { emailSender } from "./src/server/emailSender.wasp";
 import { userSpec } from "./src/user/user.wasp";
 import { socialsoccerSpec } from "./src/socialsoccer/socialsoccer.wasp";
@@ -45,7 +44,6 @@ export default app({
     authSpec,
     userSpec,
     demoAiAppSpec,
-    paymentSpec,
     fileUploadSpec,
     analyticsSpec,
     adminSpec,
