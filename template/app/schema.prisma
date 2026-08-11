@@ -148,7 +148,7 @@ model Field {
   id       String  @id @default(uuid())
   name     String
   location String
-  surface  String? @default("Sintético")
+  surface  String? @default("Sintetico")
 
   matches Match[]
 }
