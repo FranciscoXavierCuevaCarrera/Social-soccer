@@ -27,14 +27,14 @@ export const socialsoccerSpec: Spec = [
   route("StatsRoute", "/stats", page(StatsPage, { authRequired: true })),
 
   // Queries
-  query(getPlayerProfile, { entities: ["User", "PlayerProfile", "PlayerStats"] }),
-  query(getUpcomingMatches, { entities: ["Match", "Field", "Referee"] }),
-  query(getPaymentHistory, { entities: ["Payment", "Match", "Ticket"] }),
-  query(getPlayerStats, { entities: ["PlayerProfile", "PlayerStats"] }),
+  query(getPlayerProfile, { entities: ["User", "PlayerProfile", "PlayerStats", "Match", "Field", "Referee", "Payment", "Ticket"] }),
+  query(getUpcomingMatches, { entities: ["User", "PlayerProfile", "PlayerStats", "Match", "Field", "Referee", "Payment", "Ticket"] }),
+  query(getPaymentHistory, { entities: ["User", "PlayerProfile", "PlayerStats", "Match", "Field", "Referee", "Payment", "Ticket"] }),
+  query(getPlayerStats, { entities: ["User", "PlayerProfile", "PlayerStats", "Match", "Field", "Referee", "Payment", "Ticket"] }),
 
   // Actions
-  action(updatePlayerProfile, { entities: ["PlayerProfile"] }),
-  action(processPayment, { entities: ["Payment", "Ticket", "PlayerProfile"] }),
-  action(submitRefereeRating, { entities: ["RefereeRating", "Referee"] }),
-  action(updateMatchStats, { entities: ["PlayerStats", "Match"] }),
+  action(updatePlayerProfile, { entities: ["PlayerProfile", "Payment", "Ticket", "RefereeRating", "Referee", "PlayerStats", "Match"] }),
+  action(processPayment, { entities: ["PlayerProfile", "Payment", "Ticket", "RefereeRating", "Referee", "PlayerStats", "Match"] }),
+  action(submitRefereeRating, { entities: ["PlayerProfile", "Payment", "Ticket", "RefereeRating", "Referee", "PlayerStats", "Match"] }),
+  action(updateMatchStats, { entities: ["PlayerProfile", "Payment", "Ticket", "RefereeRating", "Referee", "PlayerStats", "Match"] }),
 ];
