@@ -15,6 +15,7 @@ import { fileUploadSpec } from "./src/file-upload/file-upload.wasp";
 import { emailSender } from "./src/server/emailSender.wasp";
 import { userSpec } from "./src/user/user.wasp";
 import { socialsoccerSpec } from "./src/socialsoccer/socialsoccer.wasp";
+import { matchesSpec } from "./src/matches/matches.wasp";
 
 export default app({
   name: "OpenSaaS",
@@ -23,9 +24,7 @@ export default app({
   head,
   auth: authConfig,
   db: {
-    // Run `wasp db seed` to seed the database with the seed functions below:
     seeds: [
-      // Populates the database with a bunch of fake users to work with during development.
       seedMockUsers,
     ],
   },
@@ -37,8 +36,6 @@ export default app({
   },
   emailSender,
   spec: [
-    // Prerendering routes with static content creates HTML files at build time that are served immediately,
-    // improving SEO, search engine/AI crawling, and performance: https://wasp.sh/docs/advanced/prerendering
     route("LandingPageRoute", "/", page(LandingPage), { prerender: true }),
     route("NotFoundRoute", "*", page(NotFoundPage)),
     authSpec,
@@ -48,18 +45,6 @@ export default app({
     analyticsSpec,
     adminSpec,
     socialsoccerSpec,
+    matchesSpec,
   ],
 });
-
-import { getMatches, createMatch } from "./src/matches/operations";
-
-export const getMatchesQuery = {
-  fn: getMatches,
-  entities: ["Match"],
-};
-
-export const createMatchAction = {
-  fn: createMatch,
-  entities: ["Match"],
-};
-

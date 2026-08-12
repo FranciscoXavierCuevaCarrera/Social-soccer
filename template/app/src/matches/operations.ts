@@ -1,42 +1,62 @@
-type CreateMatchInput = {
-  homeTeam: string;
-  awayTeam: string;
-  date: string;
-  time: string;
-  fieldId: string;
+type CreateMatchArgs = {
+  location: string;
+  dateTime: string;
+  maxPlayers: number;
+};
+
+type MatchIdArgs = {
+  matchId: string;
 };
 
 export const getMatches = async (_args: void, context: any) => {
+  if (!context.user) throw new Error('No autorizado');
   return context.entities.Match.findMany({
     include: {
-      field: true,
-      referee: true,
+      players: {
+        include: {
+          user: true,
+        },
+      },
     },
-    orderBy: {
-      date: 'asc',
+    orderBy: { dateTime: 'asc' },
+  });
+};
+
+export const createMatch = async (args: CreateMatchArgs, context: any) => {
+  if (!context.user) throw new Error('No autorizado');
+  return context.entities.Match.create({
+    data: {
+      location: args.location,
+      dateTime: new Date(args.dateTime),
+      maxPlayers: args.maxPlayers,
+      createdById: context.user.id,
     },
   });
 };
 
-export const createMatch = async (args: CreateMatchInput, context: any) => {
-  if (!context.user) {
-    throw new Error('Debes iniciar sesión para crear un partido.');
-  }
+export const joinMatch = async ({ matchId }: MatchIdArgs, context: any) => {
+  if (!context.user) throw new Error('No autorizado');
+  const match = await context.entities.Match.findUnique({
+    where: { id: matchId },
+    include: { players: true },
+  });
+  if (!match) throw new Error('Partido no encontrado');
+  if (match.players.length >= match.maxPlayers) throw new Error('El partido está lleno');
 
-  const {
- homeTeam, awayTeam, date, time, fieldId } = args;
-
-  if (!homeTeam || !awayTeam || !date || !time || !fieldId) {
-    throw new Error('Todos los campos son obligatorios.');
-  }
-
-  return context.entities.Match.create({
+  return context.entities.MatchPlayer.create({
     data: {
-      homeTeam,
-      awayTeam,
-      date: new Date(date),
-      time,
-      fieldId,
+      matchId,
+      userId: context.user.id,
+    },
+  });
+};
+
+export const leaveMatch = async ({ matchId }: MatchIdArgs, context: any) => {
+  if (!context.user) throw new Error('No autorizado');
+  return context.entities.MatchPlayer.deleteMany({
+    where: {
+      matchId,
+      userId: context.user.id,
     },
   });
 };

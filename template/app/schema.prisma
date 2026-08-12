@@ -16,9 +16,9 @@ model User {
   isAdmin  Boolean @default(false)
 
   paymentProcessorUserId        String?   @unique
-  lemonSqueezyCustomerPortalUrl String? // You can delete this if you're not using Lemon Squeezy as your payments processor.
-  subscriptionStatus            String? // 'active', 'cancel_at_period_end', 'past_due', 'deleted'
-  subscriptionPlan              String? // 'hobby', 'pro'
+  lemonSqueezyCustomerPortalUrl String?
+  subscriptionStatus            String?
+  subscriptionPlan              String?
   datePaid                      DateTime?
   credits                       Int       @default(3)
 
@@ -32,6 +32,8 @@ model User {
   payments       Payment[]
   tickets        Ticket[]
   refereeRatings RefereeRating[]
+  matchesCreated Match[]         @relation("CreatedMatches")
+  matchPlayers   MatchPlayer[]
 }
 
 model GptResponse {
@@ -121,7 +123,6 @@ model ContactFormMessage {
 // SocialSoccer MVP Models & Entities
 // ==========================================
 
-// Pilar 1: DataWallet & Carnet Digital
 model PlayerProfile {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -137,13 +138,12 @@ model PlayerProfile {
   position    String  @default("Mediocampista")
   number      Int?
   qrCode      String  @unique @default(uuid())
-  passStatus  String  @default("ACTIVE") // 'ACTIVE', 'PENDING_TRANSFER', 'LOCKED'
+  passStatus  String  @default("ACTIVE")
 
   stats   PlayerStats?
   tickets Ticket[]
 }
 
-// Pilar 3: Logística & Canchas
 model Field {
   id       String  @id @default(uuid())
   name     String
@@ -153,7 +153,6 @@ model Field {
   matches Match[]
 }
 
-// Pilar 3 & 4: Árbitros & Evaluación
 model Referee {
   id            String  @id @default(uuid())
   fullName      String
@@ -164,24 +163,30 @@ model Referee {
   ratings RefereeRating[]
 }
 
-// Pilar 3: Partidos, Horarios & Notificaciones Clima
 model Match {
-  id           String   @id @default(uuid())
-  createdAt    DateTime @default(now())
-  date         DateTime
-  time         String
-  homeTeam     String
-  awayTeam     String
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  location     String        @default("Cancha Principal")
+  dateTime     DateTime      @default(now())
+  maxPlayers   Int           @default(10)
+  createdById  String?
+  createdBy    User?         @relation("CreatedMatches", fields: [createdById], references: [id])
+  players      MatchPlayer[]
+
+  date         DateTime?     @default(now())
+  time         String?       @default("19:00")
+  homeTeam     String?       @default("Local")
+  awayTeam     String?       @default("Visitante")
   homeScore    Int?
   awayScore    Int?
-  status       String   @default("SCHEDULED") // 'SCHEDULED', 'IN_PROGRESS', 'FINISHED', 'CANCELLED'
+  status       String        @default("SCHEDULED")
   weatherAlert String?
 
-  field   Field  @relation(fields: [fieldId], references: [id])
-  fieldId String
+  field        Field?        @relation(fields: [fieldId], references: [id])
+  fieldId      String?
 
-  referee   Referee? @relation(fields: [refereeId], references: [id])
-  refereeId String?
+  referee      Referee?      @relation(fields: [refereeId], references: [id])
+  refereeId    String?
 
   payments       Payment[]
   tickets        Ticket[]
@@ -189,7 +194,17 @@ model Match {
   refereeRatings RefereeRating[]
 }
 
-// Pilar 2: Pasarela Fintech
+model MatchPlayer {
+  id        String   @id @default(uuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([matchId, userId])
+}
+
 model Payment {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -201,13 +216,12 @@ model Payment {
   matchId String?
 
   amount        Float
-  concept       String // 'VOCALIA', 'INSCRIPCION', 'MULTA', 'TICKET'
-  paymentMethod String  @default("DEUNA") // 'DEUNA', 'TRANSFER', 'CARD'
-  status        String  @default("COMPLETED") // 'PENDING', 'COMPLETED', 'FAILED'
+  concept       String
+  paymentMethod String  @default("DEUNA")
+  status        String  @default("COMPLETED")
   receiptUrl    String?
 }
 
-// Pilar 2: Ticketing Digital
 model Ticket {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -227,7 +241,6 @@ model Ticket {
   isUsed  Boolean @default(false)
 }
 
-// Pilar 4: Gamificación & Fair Play
 model PlayerStats {
   id String @id @default(uuid())
 
@@ -245,7 +258,6 @@ model PlayerStats {
   matchesPlayed Int @default(0)
 }
 
-// Pilar 4: Evaluación Arbitral
 model RefereeRating {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
