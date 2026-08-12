@@ -50,3 +50,16 @@ export default app({
     socialsoccerSpec,
   ],
 });
+
+import { getMatches, createMatch } from "./src/matches/operations";
+
+export const getMatchesQuery = {
+  fn: getMatches,
+  entities: ["Match"],
+};
+
+export const createMatchAction = {
+  fn: createMatch,
+  entities: ["Match"],
+};
+
