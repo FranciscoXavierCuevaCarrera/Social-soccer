@@ -1,29 +1,64 @@
-type CreateMatchArgs = {
-  location: string;
-  dateTime: string;
-  maxPlayers: number;
-};
-
-type MatchIdArgs = {
-  matchId: string;
-};
+import { HttpError } from 'wasp/server';
 
 export const getMatches = async (_args: void, context: any) => {
-  if (!context.user) throw new Error('No autorizado');
   return context.entities.Match.findMany({
     include: {
       players: {
         include: {
-          user: true,
+          user: {
+            include: {
+              playerProfile: true,
+            },
+          },
         },
       },
+      field: true,
+      referee: true,
     },
-    orderBy: { dateTime: 'asc' },
+    orderBy: {
+      dateTime: 'asc',
+    },
   });
 };
 
-export const createMatch = async (args: CreateMatchArgs, context: any) => {
-  if (!context.user) throw new Error('No autorizado');
+export const getMatch = async (args: { id: string }, context: any) => {
+  if (!context.user) {
+    throw new HttpError(401, 'Usuario no autenticado');
+  }
+
+  const match = await context.entities.Match.findUnique({
+    where: { id: args.id },
+    include: {
+      players: {
+        include: {
+          user: {
+            include: {
+              playerProfile: true,
+            },
+          },
+        },
+      },
+      field: true,
+      referee: true,
+      createdBy: true,
+    },
+  });
+
+  if (!match) {
+    throw new HttpError(404, 'Partido no encontrado');
+  }
+
+  return match;
+};
+
+export const createMatch = async (
+  args: { location: string; dateTime: string; maxPlayers: number },
+  context: any
+) => {
+  if (!context.user) {
+    throw new HttpError(401, 'Usuario no autenticado');
+  }
+
   return context.entities.Match.create({
     data: {
       location: args.location,
@@ -34,29 +69,43 @@ export const createMatch = async (args: CreateMatchArgs, context: any) => {
   });
 };
 
-export const joinMatch = async ({ matchId }: MatchIdArgs, context: any) => {
-  if (!context.user) throw new Error('No autorizado');
-  const match = await context.entities.Match.findUnique({
-    where: { id: matchId },
-    include: { players: true },
+export const joinMatch = async (args: { matchId: string }, context: any) => {
+  if (!context.user) {
+    throw new HttpError(401, 'Usuario no autenticado');
+  }
+
+  const existing = await context.entities.MatchPlayer.findUnique({
+    where: {
+      matchId_userId: {
+        matchId: args.matchId,
+        userId: context.user.id,
+      },
+    },
   });
-  if (!match) throw new Error('Partido no encontrado');
-  if (match.players.length >= match.maxPlayers) throw new Error('El partido está lleno');
+
+  if (existing) {
+    throw new HttpError(400, 'Ya estás inscrito en este partido');
+  }
 
   return context.entities.MatchPlayer.create({
     data: {
-      matchId,
+      matchId: args.matchId,
       userId: context.user.id,
     },
   });
 };
 
-export const leaveMatch = async ({ matchId }: MatchIdArgs, context: any) => {
-  if (!context.user) throw new Error('No autorizado');
-  return context.entities.MatchPlayer.deleteMany({
+export const leaveMatch = async (args: { matchId: string }, context: any) => {
+  if (!context.user) {
+    throw new HttpError(401, 'Usuario no autenticado');
+  }
+
+  return context.entities.MatchPlayer.delete({
     where: {
-      matchId,
-      userId: context.user.id,
+      matchId_userId: {
+        matchId: args.matchId,
+        userId: context.user.id,
+      },
     },
   });
 };
