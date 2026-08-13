@@ -11,11 +11,20 @@ import {
 import { CookieConsentBanner } from "./components/cookie-consent/Banner";
 
 /**
- * use this component to wrap all child components
- * this is useful for templates, themes, and context
+ * Componente raíz de la aplicación.
+ *
+ * La Landing de SocialSoccer tiene su propio diseño,
+ * por lo que no mostramos la navegación original de OpenSaaS allí.
+ *
+ * Las demás páginas mantienen la navegación de la aplicación.
  */
 export function App() {
   const location = useLocation();
+
+  const isLandingPage = useMemo(() => {
+    return location.pathname === routes.LandingPageRoute.to;
+  }, [location]);
+
   const isMarketingPage = useMemo(() => {
     return location.pathname === routes.LandingPageRoute.to;
   }, [location]);
@@ -26,10 +35,11 @@ export function App() {
 
   const shouldDisplayAppNavBar = useMemo(() => {
     return (
+      !isLandingPage &&
       location.pathname !== routes.LoginRoute.build() &&
       location.pathname !== routes.SignupRoute.build()
     );
-  }, [location]);
+  }, [location, isLandingPage]);
 
   const isAdminDashboard = useMemo(() => {
     return location.pathname.startsWith(routes.AdminRoute.to);
@@ -39,6 +49,7 @@ export function App() {
     if (location.hash) {
       const id = location.hash.replace("#", "");
       const element = document.getElementById(id);
+
       if (element) {
         element.scrollIntoView();
       }
@@ -55,12 +66,14 @@ export function App() {
             {shouldDisplayAppNavBar && (
               <NavBar navigationItems={navigationItems} />
             )}
+
             <div className="max-w-(--breakpoint-2xl) mx-auto">
               <Outlet />
             </div>
           </>
         )}
       </div>
+
       <Toaster position="bottom-right" />
       <CookieConsentBanner />
     </>
