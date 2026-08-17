@@ -48,6 +48,7 @@ export function NavBar({
   return (
     <>
       {isLandingPage && <Announcement />}
+
       <header
         className={cn(
           "sticky top-0 z-50 transition-all duration-300",
@@ -78,6 +79,7 @@ export function NavBar({
                 className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out"
               >
                 <NavLogo isScrolled={isScrolled} />
+
                 <span
                   className={cn(
                     "text-foreground font-semibold leading-6 transition-all duration-300",
@@ -87,7 +89,7 @@ export function NavBar({
                     },
                   )}
                 >
-                  Your SaaS
+                  Social Soccer
                 </span>
               </WaspRouterLink>
 
@@ -95,10 +97,12 @@ export function NavBar({
                 {renderNavigationItems(navigationItems)}
               </ul>
             </div>
+
             <NavBarMobileMenu
               isScrolled={isScrolled}
               navigationItems={navigationItems}
             />
+
             <NavBarDesktopUserDropdown isScrolled={isScrolled} />
           </nav>
         </div>
@@ -107,7 +111,11 @@ export function NavBar({
   );
 }
 
-function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
+function NavBarDesktopUserDropdown({
+  isScrolled,
+}: {
+  isScrolled: boolean;
+}) {
   const { data: user, isLoading: isUserLoading } = useAuth();
 
   return (
@@ -115,6 +123,7 @@ function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
       <ul className="flex items-center justify-center gap-2 sm:gap-4">
         <DarkModeSwitcher />
       </ul>
+
       {isUserLoading ? null : !user ? (
         <WaspRouterLink
           to={routes.LoginRoute.to}
@@ -127,7 +136,7 @@ function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
           )}
         >
           <div className="text-foreground hover:text-primary flex items-center transition-colors duration-300 ease-in-out">
-            Log in{" "}
+            Iniciar sesión
             <LogIn
               size={isScrolled ? "1rem" : "1.1rem"}
               className={cn("transition-all duration-300", {
@@ -166,7 +175,8 @@ function NavBarMobileMenu({
               "text-muted-foreground hover:text-muted hover:bg-accent inline-flex items-center justify-center rounded-md transition-colors",
             )}
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">Abrir menú principal</span>
+
             <Menu
               className={cn("transition-all duration-300", {
                 "size-8 p-1": !isScrolled,
@@ -176,25 +186,34 @@ function NavBarMobileMenu({
             />
           </button>
         </SheetTrigger>
+
         <SheetContent side="right" className="w-[300px] sm:w-[400px]">
           <SheetHeader>
             <SheetTitle className="flex items-center">
               <WaspRouterLink to={routes.LandingPageRoute.to}>
-                <span className="sr-only">Your SaaS</span>
+                <span className="sr-only">Social Soccer</span>
                 <NavLogo isScrolled={false} />
               </WaspRouterLink>
+
+              <span className="ml-2 font-bold">Social Soccer</span>
             </SheetTitle>
           </SheetHeader>
+
           <div className="mt-6 flow-root">
             <div className="divide-border -my-6 divide-y">
               <ul className="space-y-2 py-6">
-                {renderNavigationItems(navigationItems, setMobileMenuOpen)}
+                {renderNavigationItems(
+                  navigationItems,
+                  setMobileMenuOpen,
+                )}
               </ul>
+
               <div className="py-6">
                 {isUserLoading ? null : !user ? (
                   <WaspRouterLink to={routes.LoginRoute.to}>
                     <div className="text-foreground hover:text-primary flex items-center justify-end transition-colors duration-300 ease-in-out">
-                      Log in <LogIn size="1.1rem" className="ml-1" />
+                      Iniciar sesión
+                      <LogIn size="1.1rem" className="ml-1" />
                     </div>
                   </WaspRouterLink>
                 ) : (
@@ -206,6 +225,7 @@ function NavBarMobileMenu({
                   </ul>
                 )}
               </div>
+
               <div className="py-6">
                 <DarkModeSwitcher />
               </div>
@@ -224,6 +244,7 @@ function renderNavigationItems(
   const menuStyles = cn({
     "block rounded-lg px-3 py-2 text-sm font-medium leading-7 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors":
       !!setMobileMenuOpen,
+
     "text-sm font-normal leading-6 text-foreground duration-300 ease-in-out hover:text-primary transition-colors":
       !setMobileMenuOpen,
   });
@@ -234,7 +255,11 @@ function renderNavigationItems(
         <ReactRouterLink
           to={item.to}
           className={menuStyles}
-          onClick={setMobileMenuOpen && (() => setMobileMenuOpen(false))}
+          onClick={
+            setMobileMenuOpen
+              ? () => setMobileMenuOpen(false)
+              : undefined
+          }
           target={item.to.startsWith("http") ? "_blank" : undefined}
         >
           {item.name}
@@ -252,7 +277,7 @@ function NavLogo({ isScrolled }: { isScrolled: boolean }) {
         "size-7": isScrolled,
       })}
       src={logo}
-      alt="Your SaaS App"
+      alt="Social Soccer"
     />
   );
 }

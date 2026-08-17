@@ -5,18 +5,16 @@ import { Toaster } from "../client/components/ui/toaster";
 import "./Main.css";
 import { NavBar } from "./components/NavBar/NavBar";
 import {
-  demoNavigationitems,
   marketingNavigationItems,
+  socialSoccerNavigationItems,
 } from "./components/NavBar/constants";
 import { CookieConsentBanner } from "./components/cookie-consent/Banner";
 
 /**
  * Componente raíz de la aplicación.
  *
- * La Landing de SocialSoccer tiene su propio diseño,
- * por lo que no mostramos la navegación original de OpenSaaS allí.
- *
- * Las demás páginas mantienen la navegación de la aplicación.
+ * La Landing de Social Soccer utiliza la navegación pública de marketing.
+ * Las páginas de la aplicación utilizan la navegación de Social Soccer.
  */
 export function App() {
   const location = useLocation();
@@ -25,13 +23,9 @@ export function App() {
     return location.pathname === routes.LandingPageRoute.to;
   }, [location]);
 
-  const isMarketingPage = useMemo(() => {
-    return location.pathname === routes.LandingPageRoute.to;
-  }, [location]);
-
-  const navigationItems = isMarketingPage
+  const navigationItems = isLandingPage
     ? marketingNavigationItems
-    : demoNavigationitems;
+    : socialSoccerNavigationItems;
 
   const shouldDisplayAppNavBar = useMemo(() => {
     return (
