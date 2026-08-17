@@ -5,7 +5,9 @@ import {
   PlusCircle,
   UserCircle,
 } from "lucide-react";
-import { Link } from "react-router";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "wasp/client/auth";
 import { routes } from "wasp/client/router";
 
 const appSections = [
@@ -42,6 +44,19 @@ const appSections = [
 ];
 
 export function AppPage() {
+  const { data: user, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && user?.isAdmin) {
+      navigate(routes.AdminRoute.to, { replace: true });
+    }
+  }, [isLoading, user, navigate]);
+
+  if (isLoading || user?.isAdmin) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">

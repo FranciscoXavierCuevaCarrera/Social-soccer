@@ -1,50 +1,105 @@
-import React, { useState } from 'react';
-import { Link } from 'wasp/client/router';
-import { useQuery, useAction, getMatch, joinMatch, leaveMatch } from 'wasp/client/operations';
-import { useAuth } from 'wasp/client/auth';
+import React, { useState } from "react";
+import { useAuth } from "wasp/client/auth";
+import {
+  getMatch,
+  joinMatch,
+  leaveMatch,
+  useAction,
+  useQuery,
+} from "wasp/client/operations";
+import { Link, routes } from "wasp/client/router";
+import { useParams } from "react-router";
 
-export const MatchDetailPage = (props: any) => {
-  const matchId = props.match?.params?.id || props.params?.id;
+export const MatchDetailPage = () => {
+  const { id: matchId } = useParams<{ id: string }>();
   const { data: user } = useAuth();
-  const { data: match, isLoading, error, refetch } = useQuery(getMatch, { id: matchId });
 
-  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const joinAction = useAction(joinMatch);
   const leaveAction = useAction(leaveMatch);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#0B5FA5] dark:border-[#FF6B35]"></div>
-      </div>
-    );
-  }
+  const {
+    data: match,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(getMatch, { id: matchId ?? "" });
 
-  if (error || !match) {
+  if (!matchId) {
     return (
-      <div className="max-w-xl mx-auto my-12 p-6 bg-red-50 dark:bg-[#2E3138] border border-[#E63946] rounded-xl text-center">
-        <p className="text-[#E63946] font-medium">No se pudo cargar la información del partido.</p>
-        <Link to={"/matches" as any} className="mt-4 inline-block text-sm text-[#1D3557] dark:text-[#FF6B35] font-semibold hover:underline">
+      <div className="mx-auto my-12 max-w-xl rounded-xl border border-[#E63946] bg-red-50 p-6 text-center dark:bg-[#2E3138]">
+        <p className="font-medium text-[#E63946]">
+          No se especificó el partido.
+        </p>
+
+        <Link
+          to={routes.MatchListRoute.to}
+          className="mt-4 inline-block text-sm font-semibold text-[#1D3557] hover:underline dark:text-[#FF6B35]"
+        >
           ← Regresar a partidos
         </Link>
       </div>
     );
   }
 
-  const isUserJoined = match.players?.some((p: any) => p.userId === user?.id);
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#0B5FA5] dark:border-[#FF6B35]" />
+      </div>
+    );
+  }
+
+  if (error || !match) {
+    return (
+      <div className="mx-auto my-12 max-w-xl rounded-xl border border-[#E63946] bg-red-50 p-6 text-center dark:bg-[#2E3138]">
+        <p className="font-medium text-[#E63946]">
+          No se pudo cargar la información del partido.
+        </p>
+
+        <Link
+          to={routes.MatchListRoute.to}
+          className="mt-4 inline-block text-sm font-semibold text-[#1D3557] hover:underline dark:text-[#FF6B35]"
+        >
+          ← Regresar a partidos
+        </Link>
+      </div>
+    );
+  }
+
+  const isUserJoined =
+    match.players?.some((player) => player.userId === user?.id) ?? false;
+
   const isFull = (match.players?.length || 0) >= match.maxPlayers;
 
   const handleJoin = async () => {
     try {
       setIsProcessing(true);
       setMessage(null);
+
       await joinAction({ matchId: match.id });
-      setMessage({ type: 'success', text: '¡Te has inscrito al partido exitosamente!' });
+
+      setMessage({
+        type: "success",
+        text: "¡Te has inscrito al partido exitosamente!",
+      });
+
       refetch();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Error al unirse al partido' });
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Error al unirse al partido";
+
+      setMessage({
+        type: "error",
+        text: errorMessage,
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -54,138 +109,172 @@ export const MatchDetailPage = (props: any) => {
     try {
       setIsProcessing(true);
       setMessage(null);
+
       await leaveAction({ matchId: match.id });
-      setMessage({ type: 'success', text: 'Has salido del partido' });
+
+      setMessage({
+        type: "success",
+        text: "Has salido del partido",
+      });
+
       refetch();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Error al salir del partido' });
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Error al salir del partido";
+
+      setMessage({
+        type: "error",
+        text: errorMessage,
+      });
     } finally {
       setIsProcessing(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      {/* Navegación */}
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-8">
       <Link
-        to={"/matches" as any}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-[#1D3557] dark:text-[#FF6B35] hover:opacity-80 transition-opacity"
+        to={routes.MatchListRoute.to}
+        className="inline-flex items-center gap-2 text-sm font-semibold text-[#1D3557] transition-opacity hover:opacity-80 dark:text-[#FF6B35]"
       >
         <span>←</span> Volver a la lista
       </Link>
 
-      {/* Alertas */}
       {message && (
         <div
-          className={`p-4 rounded-xl border text-sm font-medium ${
-            message.type === 'error'
-              ? 'bg-red-50 dark:bg-red-950/30 text-[#E63946] border-[#E63946]'
-              : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-500'
+          className={`rounded-xl border p-4 text-sm font-medium ${
+            message.type === "error"
+              ? "border-[#E63946] bg-red-50 text-[#E63946] dark:bg-red-950/30"
+              : "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
           }`}
         >
           {message.text}
         </div>
       )}
 
-      {/* Tarjeta Principal Stitch */}
-      <div className="bg-white dark:bg-[#2E3138] border border-gray-200 dark:border-gray-700 rounded-xl p-6 sm:p-8 shadow-md space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-6">
+      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] sm:p-8">
+        <div className="flex flex-col justify-between gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-center dark:border-gray-700">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`px-3 py-1 text-white text-xs font-bold rounded-full ${isFull ? 'bg-[#E63946]' : 'bg-[#FF6B35]'}`}>
-                {isFull ? 'COMPLETO' : 'CUPO DISPONIBLE'}
+            <div className="mb-2 flex items-center gap-2">
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold text-white ${
+                  isFull ? "bg-[#E63946]" : "bg-[#FF6B35]"
+                }`}
+              >
+                {isFull ? "COMPLETO" : "CUPO DISPONIBLE"}
               </span>
             </div>
-            <h1 className="text-3xl font-extrabold text-[#1D3557] dark:text-white tracking-tight">
+
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#1D3557] dark:text-white">
               {match.location}
             </h1>
           </div>
 
-          <div className="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center">
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Cupos</span>
+          <div className="flex items-start justify-between sm:flex-col sm:items-end sm:justify-center">
+            <span className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Cupos
+            </span>
+
             <span className="text-2xl font-black text-[#1D3557] dark:text-[#FF6B35]">
               {match.players?.length || 0} / {match.maxPlayers}
             </span>
           </div>
         </div>
 
-        {/* Detalles Logísticos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold block mb-1">📅 FECHA Y HORA</span>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+            <span className="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">
+              📅 FECHA Y HORA
+            </span>
+
             <p className="text-base font-bold text-gray-800 dark:text-gray-200">
               {new Date(match.dateTime).toLocaleString(undefined, {
-                dateStyle: 'full',
-                timeStyle: 'short',
+                dateStyle: "full",
+                timeStyle: "short",
               })}
             </p>
           </div>
 
-          <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold block mb-1">📍 CANCHA / UBICACIÓN</span>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+            <span className="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">
+              📍 CANCHA / UBICACIÓN
+            </span>
+
             <p className="text-base font-bold text-gray-800 dark:text-gray-200">
               {match.field?.name || match.location}
             </p>
           </div>
         </div>
 
-        {/* Botón de Acción Principal */}
         <div className="pt-2">
           {isUserJoined ? (
             <button
               onClick={handleLeave}
               disabled={isProcessing}
-              className="w-full py-3 px-6 bg-[#E63946] hover:bg-red-700 text-white font-bold rounded-xl shadow transition-all disabled:opacity-50"
+              className="w-full rounded-xl bg-[#E63946] px-6 py-3 font-bold text-white shadow transition-all hover:bg-red-700 disabled:opacity-50"
             >
-              {isProcessing ? 'Procesando...' : 'Salirse del Partido'}
+              {isProcessing ? "Procesando..." : "Salirse del Partido"}
             </button>
           ) : (
             <button
               onClick={handleJoin}
               disabled={isProcessing || isFull}
-              className={`w-full py-3 px-6 font-bold rounded-xl shadow transition-all text-white ${
+              className={`w-full rounded-xl px-6 py-3 font-bold text-white shadow transition-all ${
                 isFull
-                  ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed'
-                  : 'bg-[#1D3557] dark:bg-[#0B5FA5] hover:opacity-90'
+                  ? "cursor-not-allowed bg-gray-400 dark:bg-gray-700"
+                  : "bg-[#1D3557] hover:opacity-90 dark:bg-[#0B5FA5]"
               }`}
             >
-              {isFull ? 'Partido Lleno' : isProcessing ? 'Procesando...' : 'Inscribirme al Partido'}
+              {isFull
+                ? "Partido Lleno"
+                : isProcessing
+                  ? "Procesando..."
+                  : "Inscribirme al Partido"}
             </button>
           )}
         </div>
       </div>
 
-      {/* Lista de Jugadores Inscritos */}
-      <div className="bg-white dark:bg-[#2E3138] border border-gray-200 dark:border-gray-700 rounded-xl p-6 sm:p-8 shadow-md">
-        <h2 className="text-xl font-bold text-[#1D3557] dark:text-white mb-4">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] sm:p-8">
+        <h2 className="mb-4 text-xl font-bold text-[#1D3557] dark:text-white">
           Jugadores Confirmados ({match.players?.length || 0})
         </h2>
 
         {!match.players || match.players.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
+          <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
             Aún no hay jugadores inscritos en este partido.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {match.players.map((p: any) => {
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {match.players.map((player) => {
               const playerName =
-                p.user?.playerProfile?.name ||
-                p.user?.email ||
-                p.user?.username ||
-                'Jugador Confirmado';
-              const position = p.user?.playerProfile?.position || 'Jugador';
+                player.user?.playerProfile?.fullName ||
+                player.user?.email ||
+                player.user?.username ||
+                "Jugador Confirmado";
+
+              const position =
+                player.user?.playerProfile?.position || "Jugador";
 
               return (
                 <div
-                  key={p.id || p.userId}
-                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 rounded-xl"
+                  key={player.id || player.userId}
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40"
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#1D3557]/10 dark:bg-[#0B5FA5]/30 text-[#1D3557] dark:text-[#FF6B35] flex items-center justify-center font-black text-sm">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1D3557]/10 text-sm font-black text-[#1D3557] dark:bg-[#0B5FA5]/30 dark:text-[#FF6B35]">
                     ⚽
                   </div>
+
                   <div>
-                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{playerName}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{position}</p>
+                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                      {playerName}
+                    </p>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {position}
+                    </p>
                   </div>
                 </div>
               );

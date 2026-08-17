@@ -30,24 +30,28 @@ import { uploadFileWithProgress, validateFile } from "./fileUploading";
 import { ALLOWED_FILE_TYPES } from "./validation";
 
 export function FileUploadPage() {
-  const [fileKeyForS3, setFileKeyForS3] = useState<FileEntity["s3Key"]>("");
-  const [uploadProgressPercent, setUploadProgressPercent] = useState<number>(0);
-  const [fileToDelete, setFileToDelete] = useState<Pick<
-    FileEntity,
-    "id" | "s3Key" | "name"
-  > | null>(null);
+  const [fileKeyForS3, setFileKeyForS3] =
+    useState<FileEntity["s3Key"]>("");
+  const [uploadProgressPercent, setUploadProgressPercent] =
+    useState<number>(0);
+  const [fileToDelete, setFileToDelete] = useState<
+    Pick<FileEntity, "id" | "s3Key" | "name"> | null
+  >(null);
 
   const allUserFiles = useQuery(getAllFilesByUser, undefined, {
     // We disable automatic refetching because otherwise files would be refetched after `createFile` is called and the S3 URL is returned,
     // which happens before the file is actually fully uploaded. Instead, we manually (re)fetch on mount and after the upload is complete.
     enabled: false,
   });
-  const { isLoading: isDownloadUrlLoading, refetch: refetchDownloadUrl } =
-    useQuery(
-      getDownloadFileSignedURL,
-      { s3Key: fileKeyForS3 },
-      { enabled: false },
-    );
+
+  const {
+    isLoading: isDownloadUrlLoading,
+    refetch: refetchDownloadUrl,
+  } = useQuery(
+    getDownloadFileSignedURL,
+    { s3Key: fileKeyForS3 },
+    { enabled: false },
+  );
 
   useEffect(() => {
     allUserFiles.refetch();
@@ -56,16 +60,20 @@ export function FileUploadPage() {
   useEffect(() => {
     if (fileKeyForS3.length > 0) {
       refetchDownloadUrl()
-        .then((urlQuery: any) => {
+        .then((urlQuery) => {
           switch (urlQuery.status) {
             case "error":
-              console.error("Error fetching download URL", urlQuery.error);
+              console.error(
+                "Error fetching download URL",
+                urlQuery.error,
+              );
               toast({
                 title: "Error fetching download link",
                 description: "Please try again later.",
                 variant: "destructive",
               });
               return;
+
             case "success":
               window.open(urlQuery.data, "_blank");
               return;
@@ -100,10 +108,11 @@ export function FileUploadPage() {
 
       const file = validateFile(formDataFileUpload);
 
-      const { s3UploadUrl, s3UploadFields, s3Key } = await createFileUploadUrl({
-        fileType: file.type,
-        fileName: file.name,
-      });
+      const { s3UploadUrl, s3UploadFields, s3Key } =
+        await createFileUploadUrl({
+          fileType: file.type,
+          fileName: file.name,
+        });
 
       await uploadFileWithProgress({
         file,
@@ -120,14 +129,17 @@ export function FileUploadPage() {
 
       formElement.reset();
       allUserFiles.refetch();
+
       toast({
         title: "File uploaded",
         description: "Your file has been successfully uploaded.",
       });
     } catch (error) {
       console.error("Error uploading file:", error);
+
       const errorMessage =
         error instanceof Error ? error.message : "Error uploading file.";
+
       toast({
         title: "Error uploading file",
         description: errorMessage,
@@ -138,9 +150,13 @@ export function FileUploadPage() {
     }
   };
 
-  const handleDelete = async ({ id, name }: Pick<FileEntity, "id" | "name">) => {
+  const handleDelete = async ({
+    id,
+    name,
+  }: Pick<FileEntity, "id" | "name">) => {
     try {
       await deleteFile({ id });
+
       toast({
         title: "File deleted",
         description: (
@@ -149,10 +165,12 @@ export function FileUploadPage() {
           </span>
         ),
       });
+
       allUserFiles.refetch();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Error deleting file.";
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -172,11 +190,13 @@ export function FileUploadPage() {
               <span className="text-primary">AWS</span> File Upload
             </h2>
           </div>
+
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg leading-8">
             This is an example file upload page using AWS S3. Maybe your app
             needs this. Maybe it doesn't. But a lot of people asked for this
             feature, so here you go 🤝
           </p>
+
           <Card className="my-8">
             <CardContent className="mx-auto my-10 space-y-10 px-4 py-8 sm:max-w-lg">
               <form onSubmit={handleUpload} className="flex flex-col gap-4">
@@ -187,6 +207,7 @@ export function FileUploadPage() {
                   >
                     Select a file to upload
                   </Label>
+
                   <Input
                     type="file"
                     id="file-upload"
@@ -195,6 +216,7 @@ export function FileUploadPage() {
                     className="cursor-pointer"
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Button
                     type="submit"
@@ -205,6 +227,7 @@ export function FileUploadPage() {
                       ? `Uploading ${uploadProgressPercent}%`
                       : "Upload"}
                   </Button>
+
                   {uploadProgressPercent > 0 && (
                     <Progress
                       value={uploadProgressPercent}
@@ -213,14 +236,18 @@ export function FileUploadPage() {
                   )}
                 </div>
               </form>
+
               <div className="border-border border-b-2"></div>
+
               <div className="col-span-full space-y-4">
                 <CardTitle className="text-foreground text-xl font-bold">
                   Uploaded Files
                 </CardTitle>
+
                 {allUserFiles.isLoading && (
                   <p className="text-muted-foreground">Loading...</p>
                 )}
+
                 {allUserFiles.error && (
                   <Alert variant="destructive">
                     <AlertDescription>
@@ -228,6 +255,7 @@ export function FileUploadPage() {
                     </AlertDescription>
                   </Alert>
                 )}
+
                 {!!allUserFiles.data &&
                 allUserFiles.data.length > 0 &&
                 !allUserFiles.isLoading ? (
@@ -247,9 +275,12 @@ export function FileUploadPage() {
                           <p className="text-foreground font-medium">
                             {file.name}
                           </p>
+
                           <div className="flex items-center justify-end gap-2">
                             <Button
-                              onClick={() => setFileKeyForS3(file.s3Key)}
+                              onClick={() =>
+                                setFileKeyForS3(file.s3Key)
+                              }
                               disabled={
                                 file.s3Key === fileKeyForS3 &&
                                 isDownloadUrlLoading
@@ -259,6 +290,7 @@ export function FileUploadPage() {
                             >
                               <Download className="h-5 w-5" />
                             </Button>
+
                             <Button
                               onClick={() => setFileToDelete(file)}
                               variant="outline"
@@ -282,10 +314,13 @@ export function FileUploadPage() {
           </Card>
         </div>
       </div>
+
       {fileToDelete && (
         <Dialog
           open={!!fileToDelete}
-          onOpenChange={(isOpen) => !isOpen && setFileToDelete(null)}
+          onOpenChange={(isOpen) =>
+            !isOpen && setFileToDelete(null)
+          }
         >
           <DialogContent>
             <DialogHeader>
@@ -296,10 +331,15 @@ export function FileUploadPage() {
                 undone.
               </DialogDescription>
             </DialogHeader>
+
             <DialogFooter>
-              <Button variant="outline" onClick={() => setFileToDelete(null)}>
+              <Button
+                variant="outline"
+                onClick={() => setFileToDelete(null)}
+              >
                 Cancel
               </Button>
+
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(fileToDelete)}

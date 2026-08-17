@@ -1,6 +1,19 @@
+import { type PrismaClient } from "@prisma/client";
+import { type User } from "wasp/entities";
 import { HttpError } from "wasp/server";
 
-export const getMatches = async (_args: void, context: any) => {
+type MatchesContext = {
+  user?: User;
+  entities: {
+    Match: PrismaClient["match"];
+    MatchPlayer: PrismaClient["matchPlayer"];
+  };
+};
+
+export const getMatches = async (
+  _args: void,
+  context: MatchesContext,
+) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -32,7 +45,7 @@ export const getMatches = async (_args: void, context: any) => {
 
 export const getMatch = async (
   args: { id: string },
-  context: any
+  context: MatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -71,7 +84,7 @@ export const createMatch = async (
     dateTime: string;
     maxPlayers: number;
   },
-  context: any
+  context: MatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -94,7 +107,7 @@ export const createMatch = async (
   if (matchDate <= new Date()) {
     throw new HttpError(
       400,
-      "El partido debe programarse para una fecha futura"
+      "El partido debe programarse para una fecha futura",
     );
   }
 
@@ -105,7 +118,7 @@ export const createMatch = async (
   ) {
     throw new HttpError(
       400,
-      "El número de jugadores debe estar entre 2 y 30"
+      "El número de jugadores debe estar entre 2 y 30",
     );
   }
 
@@ -121,7 +134,7 @@ export const createMatch = async (
 
 export const joinMatch = async (
   args: { matchId: string },
-  context: any
+  context: MatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -143,7 +156,7 @@ export const joinMatch = async (
   if (match.dateTime <= new Date()) {
     throw new HttpError(
       400,
-      "No puedes inscribirte a un partido que ya comenzó"
+      "No puedes inscribirte a un partido que ya comenzó",
     );
   }
 
@@ -159,14 +172,14 @@ export const joinMatch = async (
   if (existing) {
     throw new HttpError(
       400,
-      "Ya estás inscrito en este partido"
+      "Ya estás inscrito en este partido",
     );
   }
 
   if (match.players.length >= match.maxPlayers) {
     throw new HttpError(
       400,
-      "El partido ya está lleno"
+      "El partido ya está lleno",
     );
   }
 
@@ -180,7 +193,7 @@ export const joinMatch = async (
 
 export const leaveMatch = async (
   args: { matchId: string },
-  context: any
+  context: MatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -198,7 +211,7 @@ export const leaveMatch = async (
   if (!existing) {
     throw new HttpError(
       400,
-      "No estás inscrito en este partido"
+      "No estás inscrito en este partido",
     );
   }
 

@@ -22,9 +22,21 @@ import {
 export const socialsoccerSpec: Spec = [
   // Rutas y Páginas
   route("AppRoute", "/app", page(AppPage, { authRequired: true })),
-  route("IdentityRoute", "/identity", page(IdentityPage, { authRequired: true })),
-  route("PaymentsRoute", "/payments", page(PaymentsPage, { authRequired: true })),
-  route("StatsRoute", "/stats", page(StatsPage, { authRequired: true })),
+  route(
+    "IdentityRoute",
+    "/identity",
+    page(IdentityPage, { authRequired: true }),
+  ),
+  route(
+    "PaymentsRoute",
+    "/payments",
+    page(PaymentsPage, { authRequired: true }),
+  ),
+  route(
+    "StatsRoute",
+    "/stats",
+    page(StatsPage, { authRequired: true }),
+  ),
 
   // Queries
   query(getPlayerProfile, {
@@ -33,6 +45,7 @@ export const socialsoccerSpec: Spec = [
       "PlayerProfile",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
@@ -46,6 +59,7 @@ export const socialsoccerSpec: Spec = [
       "PlayerProfile",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
@@ -59,6 +73,7 @@ export const socialsoccerSpec: Spec = [
       "PlayerProfile",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
@@ -72,6 +87,7 @@ export const socialsoccerSpec: Spec = [
       "PlayerProfile",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
@@ -89,6 +105,7 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
     ],
   }),
 
@@ -101,6 +118,7 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
     ],
   }),
 
@@ -113,6 +131,7 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
     ],
   }),
 
@@ -125,6 +144,7 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
+      "MatchPlayer",
     ],
   }),
 ];

@@ -1,4 +1,7 @@
-import { type DailyStats, type PageViewSource } from "wasp/entities";
+import {
+  type DailyStats,
+  type PageViewSource,
+} from "wasp/entities";
 import { HttpError, prisma } from "wasp/server";
 import { type GetDailyStats } from "wasp/server/operations";
 
@@ -11,10 +14,20 @@ type DailyStatsValues = {
   weeklyStats: DailyStatsWithSources[];
 };
 
+type AnalyticsContext = {
+  user?: {
+    id: string;
+    isAdmin: boolean;
+  };
+  entities: {
+    DailyStats: typeof prisma.dailyStats;
+  };
+};
+
 export const getDailyStats: GetDailyStats<
   void,
   DailyStatsValues | undefined
-> = async (_args: any, context: any) => {
+> = async (_args: void, context: AnalyticsContext) => {
   if (!context.user) {
     throw new HttpError(
       401,
@@ -31,16 +44,19 @@ export const getDailyStats: GetDailyStats<
 
   const statsQuery = {
     orderBy: {
-      date: "desc",
+      date: "desc" as const,
     },
     include: {
       sources: true,
     },
-  } as const;
+  };
 
   const [dailyStats, weeklyStats] = await prisma.$transaction([
     context.entities.DailyStats.findFirst(statsQuery),
-    context.entities.DailyStats.findMany({ ...statsQuery, take: 7 }),
+    context.entities.DailyStats.findMany({
+      ...statsQuery,
+      take: 7,
+    }),
   ]);
 
   if (!dailyStats) {
