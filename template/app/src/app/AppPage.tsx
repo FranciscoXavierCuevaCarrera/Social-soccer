@@ -58,7 +58,7 @@ export function AppPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="bg-background text-foreground min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">
         <section className="mb-10">
           <p className="text-sm font-semibold tracking-wide text-[#FF6B35]">
@@ -69,7 +69,7 @@ export function AppPage() {
             Bienvenido a Social Soccer
           </h1>
 
-          <p className="mt-3 max-w-2xl text-muted-foreground">
+          <p className="text-muted-foreground mt-3 max-w-2xl">
             Este es tu centro de operaciones. Desde aquí puedes acceder a tus
             partidos, organizar encuentros, consultar tus estadísticas y
             gestionar tu perfil y finanzas.
@@ -87,7 +87,7 @@ export function AppPage() {
               <Link
                 key={section.title}
                 to={section.to}
-                className="group rounded-2xl border bg-card p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                className="bg-card group rounded-2xl border p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1D3557] text-white transition-colors duration-200 group-hover:bg-[#FF6B35]">
                   <Icon className="h-6 w-6" />
@@ -95,7 +95,7 @@ export function AppPage() {
 
                 <h2 className="text-lg font-bold">{section.title}</h2>
 
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                <p className="text-muted-foreground mt-2 text-sm leading-6">
                   {section.description}
                 </p>
               </Link>

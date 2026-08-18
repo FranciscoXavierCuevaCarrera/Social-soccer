@@ -50,9 +50,7 @@ function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
 
 export function UsersTable() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [emailFilter, setEmailFilter] = useState<string | undefined>(
-    undefined,
-  );
+  const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(
     undefined,
   );
@@ -101,8 +99,7 @@ export function UsersTable() {
     setSubscriptionStatusFilter([]);
   };
 
-  const hasActiveFilters =
-    subscriptionStatusFilter.length > 0;
+  const hasActiveFilters = subscriptionStatusFilter.length > 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -163,12 +160,8 @@ export function UsersTable() {
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="all-statuses"
-                            checked={
-                              subscriptionStatusFilter.length === 0
-                            }
-                            onCheckedChange={() =>
-                              clearAllStatusFilters()
-                            }
+                            checked={subscriptionStatusFilter.length === 0}
+                            onCheckedChange={() => clearAllStatusFilters()}
                           />
 
                           <Label
@@ -182,12 +175,8 @@ export function UsersTable() {
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="has-not-subscribed"
-                            checked={subscriptionStatusFilter.includes(
-                              null,
-                            )}
-                            onCheckedChange={() =>
-                              handleStatusToggle(null)
-                            }
+                            checked={subscriptionStatusFilter.includes(null)}
+                            onCheckedChange={() => handleStatusToggle(null)}
                           />
 
                           <Label
@@ -198,31 +187,27 @@ export function UsersTable() {
                           </Label>
                         </div>
 
-                        {Object.values(SubscriptionStatus).map(
-                          (status) => (
-                            <div
-                              key={status}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={status}
-                                checked={subscriptionStatusFilter.includes(
-                                  status,
-                                )}
-                                onCheckedChange={() =>
-                                  handleStatusToggle(status)
-                                }
-                              />
+                        {Object.values(SubscriptionStatus).map((status) => (
+                          <div
+                            key={status}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={status}
+                              checked={subscriptionStatusFilter.includes(
+                                status,
+                              )}
+                              onCheckedChange={() => handleStatusToggle(status)}
+                            />
 
-                              <Label
-                                htmlFor={status}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {status}
-                              </Label>
-                            </div>
-                          ),
-                        )}
+                            <Label
+                              htmlFor={status}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {status}
+                            </Label>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </SelectContent>
@@ -261,9 +246,7 @@ export function UsersTable() {
 
             {data?.totalPages && (
               <div className="flex max-w-60 flex-row items-center">
-                <span className="text-md text-foreground mr-2">
-                  page
-                </span>
+                <span className="text-md text-foreground mr-2">page</span>
 
                 <Input
                   type="number"
@@ -348,13 +331,9 @@ export function UsersTable() {
             >
               <div className="col-span-3 flex items-center">
                 <div className="flex flex-col gap-1">
-                  <p className="text-foreground text-sm">
-                    {user.email}
-                  </p>
+                  <p className="text-foreground text-sm">{user.email}</p>
 
-                  <p className="text-foreground text-sm">
-                    {user.username}
-                  </p>
+                  <p className="text-foreground text-sm">{user.username}</p>
                 </div>
               </div>
 

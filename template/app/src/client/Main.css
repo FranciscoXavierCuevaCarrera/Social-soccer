@@ -223,32 +223,32 @@
     --card-subtle-foreground: 215 50% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 215 50% 15%;
-    --primary: 215 50% 22.7%;          /* #1D3557 (Azul Tribuna) */
+    --primary: 215 50% 22.7%; /* #1D3557 (Azul Tribuna) */
     --primary-foreground: 0 0% 100%;
-    --secondary: 28 87.3% 66.9%;       /* #F4A261 (Arena Cálida) */
+    --secondary: 28 87.3% 66.9%; /* #F4A261 (Arena Cálida) */
     --secondary-foreground: 215 50% 15%;
     --secondary-muted: 28 75% 78%;
     --secondary-muted-foreground: 215 50% 15%;
     --muted: 215 20% 94%;
     --muted-foreground: 215 20% 45%;
-    --accent: 355 78.4% 56.3%;         /* #E63946 (Rojo Pasión) */
+    --accent: 355 78.4% 56.3%; /* #E63946 (Rojo Pasión) */
     --accent-foreground: 0 0% 100%;
     --destructive: 355 78.4% 56.3%;
     --destructive-foreground: 0 0% 100%;
     --success: 141 71% 48%;
     --success-foreground: 0 0% 100%;
-    --warning: 13 68.3% 62.5%;         /* #E07A5F (Terracota) */
+    --warning: 13 68.3% 62.5%; /* #E07A5F (Terracota) */
     --warning-foreground: 0 0% 100%;
     --border: 215 20% 90%;
     --input: 215 20% 90%;
     --ring: 215 50% 22.7%;
-    --radius: 0.75rem;                 /* rounded-xl */
+    --radius: 0.75rem; /* rounded-xl */
   }
 
   .dark {
     --background: 223 10.1% 15%;
     --foreground: 0 0% 98%;
-    --card: 223 10.1% 20.2%;           /* #2E3138 (Gris Carbón) */
+    --card: 223 10.1% 20.2%; /* #2E3138 (Gris Carbón) */
     --card-foreground: 0 0% 98%;
     --card-accent: 207 87.5% 25%;
     --card-accent-foreground: 0 0% 98%;
@@ -256,17 +256,17 @@
     --card-subtle-foreground: 0 0% 98%;
     --popover: 223 10.1% 18%;
     --popover-foreground: 0 0% 98%;
-    --primary: 207 87.5% 34.5%;         /* #0B5FA5 (Azul Confianza) */
+    --primary: 207 87.5% 34.5%; /* #0B5FA5 (Azul Confianza) */
     --primary-foreground: 0 0% 100%;
-    --secondary: 223 10.1% 20.2%;       /* #2E3138 (Gris Carbón) */
+    --secondary: 223 10.1% 20.2%; /* #2E3138 (Gris Carbón) */
     --secondary-foreground: 0 0% 98%;
     --secondary-muted: 223 10.1% 30%;
     --secondary-muted-foreground: 0 0% 98%;
     --muted: 223 10.1% 24%;
     --muted-foreground: 0 0% 65%;
-    --accent: 16 100% 60.2%;           /* #FF6B35 (Naranja Energía) */
+    --accent: 16 100% 60.2%; /* #FF6B35 (Naranja Energía) */
     --accent-foreground: 0 0% 100%;
-    --destructive: 355 78.4% 56.3%;    /* #E63946 (Rojo Expulsión) */
+    --destructive: 355 78.4% 56.3%; /* #E63946 (Rojo Expulsión) */
     --destructive-foreground: 0 0% 100%;
     --success: 141 71% 48%;
     --success-foreground: 0 0% 100%;

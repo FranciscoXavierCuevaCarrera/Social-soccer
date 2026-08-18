@@ -1,16 +1,16 @@
-import { HttpError } from "wasp/server";
-import type { 
-  PlayerProfile, 
-  Payment,
-  Ticket,
-  RefereeRating,
-  PlayerStats,
-} from "wasp/entities";
 import type {
-  UpdatePlayerProfile,
+  Payment,
+  PlayerProfile,
+  PlayerStats,
+  RefereeRating,
+  Ticket,
+} from "wasp/entities";
+import { HttpError } from "wasp/server";
+import type {
   ProcessPayment,
   SubmitRefereeRating,
   UpdateMatchStats,
+  UpdatePlayerProfile,
 } from "wasp/server/operations";
 
 type UpdatePlayerProfileInput = {
@@ -22,7 +22,10 @@ type UpdatePlayerProfileInput = {
   number?: number;
 };
 
-export const updatePlayerProfile: UpdatePlayerProfile<UpdatePlayerProfileInput, PlayerProfile> = async (args, context) => {
+export const updatePlayerProfile: UpdatePlayerProfile<
+  UpdatePlayerProfileInput,
+  PlayerProfile
+> = async (args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -56,7 +59,10 @@ type ProcessPaymentInput = {
   matchId?: string;
 };
 
-export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { ticket?: Ticket | null }> = async (args, context) => {
+export const processPayment: ProcessPayment<
+  ProcessPaymentInput,
+  Payment & { ticket?: Ticket | null }
+> = async (args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -76,16 +82,16 @@ export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { tic
     let ticket: Ticket | null = null;
     if (args.concept === "TICKET" && args.matchId) {
       const profile = await context.entities.PlayerProfile.findUnique({
-        where: { userId: context.user.id }
+        where: { userId: context.user.id },
       });
-      
+
       ticket = await context.entities.Ticket.create({
         data: {
           userId: context.user.id,
           matchId: args.matchId,
           playerProfileId: profile?.id,
           price: args.amount,
-        }
+        },
       });
     }
 
@@ -93,7 +99,10 @@ export const processPayment: ProcessPayment<ProcessPaymentInput, Payment & { tic
   } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-    throw new HttpError(500, `Error al procesar la transacción de pago: ${msg}`);
+    throw new HttpError(
+      500,
+      `Error al procesar la transacción de pago: ${msg}`,
+    );
   }
 };
 
@@ -104,7 +113,10 @@ type SubmitRefereeRatingInput = {
   comment?: string;
 };
 
-export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, RefereeRating> = async (args, context) => {
+export const submitRefereeRating: SubmitRefereeRating<
+  SubmitRefereeRatingInput,
+  RefereeRating
+> = async (args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -125,9 +137,13 @@ export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, 
       where: { refereeId: args.refereeId },
     });
 
-    const avg = allRatings.length > 0 
-      ? allRatings.reduce((acc: number, r: RefereeRating) => acc + r.stars, 0) / allRatings.length
-      : 5.0;
+    const avg =
+      allRatings.length > 0
+        ? allRatings.reduce(
+            (acc: number, r: RefereeRating) => acc + r.stars,
+            0,
+          ) / allRatings.length
+        : 5.0;
 
     await context.entities.Referee.update({
       where: { id: args.refereeId },
@@ -138,7 +154,10 @@ export const submitRefereeRating: SubmitRefereeRating<SubmitRefereeRatingInput, 
   } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-    throw new HttpError(500, `Error al registrar la calificación arbitral: ${msg}`);
+    throw new HttpError(
+      500,
+      `Error al registrar la calificación arbitral: ${msg}`,
+    );
   }
 };
 
@@ -152,14 +171,20 @@ type UpdateMatchStatsInput = {
   fairPlayScore: number;
 };
 
-export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerStats> = async (args, context) => {
+export const updateMatchStats: UpdateMatchStats<
+  UpdateMatchStatsInput,
+  PlayerStats
+> = async (args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
 
   // RBAC: Solo administradores pueden actualizar estadísticas de partidos
   if (!context.user.isAdmin) {
-    throw new HttpError(403, "Acceso denegado: Se requieren permisos de administrador (isAdmin) para modificar estadísticas de partidos");
+    throw new HttpError(
+      403,
+      "Acceso denegado: Se requieren permisos de administrador (isAdmin) para modificar estadísticas de partidos",
+    );
   }
 
   try {
@@ -185,6 +210,9 @@ export const updateMatchStats: UpdateMatchStats<UpdateMatchStatsInput, PlayerSta
   } catch (error: unknown) {
     if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-    throw new HttpError(500, `Error al actualizar estadísticas del partido: ${msg}`);
+    throw new HttpError(
+      500,
+      `Error al actualizar estadísticas del partido: ${msg}`,
+    );
   }
 };

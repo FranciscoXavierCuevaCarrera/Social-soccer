@@ -5,6 +5,7 @@ Este documento contiene el desglose granular de tareas técnicas para la impleme
 ---
 
 ## 📌 Estado General del Proyecto
+
 - **Fase Actual:** Fases 1 a 4 completadas (Configuración DB, UI Dual, Módulos Frontend, Queries & Actions con RBAC y Wasp Spec arreglado).
 - **Prototipo Oficial:** [Google Stitch UI Prototype](https://stitch.withgoogle.com/projects/11720181075081878902) (5 pantallas en Modo Oscuro `#0B5FA5` y Modo Claro `#1D3557`).
 

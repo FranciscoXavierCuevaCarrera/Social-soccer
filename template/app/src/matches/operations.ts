@@ -10,10 +10,7 @@ type MatchesContext = {
   };
 };
 
-export const getMatches = async (
-  _args: void,
-  context: MatchesContext,
-) => {
+export const getMatches = async (_args: void, context: MatchesContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -116,10 +113,7 @@ export const createMatch = async (
     args.maxPlayers < 2 ||
     args.maxPlayers > 30
   ) {
-    throw new HttpError(
-      400,
-      "El número de jugadores debe estar entre 2 y 30",
-    );
+    throw new HttpError(400, "El número de jugadores debe estar entre 2 y 30");
   }
 
   return context.entities.Match.create({
@@ -170,17 +164,11 @@ export const joinMatch = async (
   });
 
   if (existing) {
-    throw new HttpError(
-      400,
-      "Ya estás inscrito en este partido",
-    );
+    throw new HttpError(400, "Ya estás inscrito en este partido");
   }
 
   if (match.players.length >= match.maxPlayers) {
-    throw new HttpError(
-      400,
-      "El partido ya está lleno",
-    );
+    throw new HttpError(400, "El partido ya está lleno");
   }
 
   return context.entities.MatchPlayer.create({
@@ -209,10 +197,7 @@ export const leaveMatch = async (
   });
 
   if (!existing) {
-    throw new HttpError(
-      400,
-      "No estás inscrito en este partido",
-    );
+    throw new HttpError(400, "No estás inscrito en este partido");
   }
 
   await context.entities.MatchPlayer.delete({

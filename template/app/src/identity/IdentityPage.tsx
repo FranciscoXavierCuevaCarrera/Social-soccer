@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   AlertCircle,
   Award,
@@ -8,6 +7,7 @@ import {
   Shield,
   UserCheck,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "wasp/client/auth";
 import {
   getPlayerProfile,
@@ -18,9 +18,12 @@ import {
 
 export function IdentityPage() {
   const { data: user } = useAuth();
-  const { data: profile, isLoading, error, refetch } = useQuery(
-    getPlayerProfile,
-  );
+  const {
+    data: profile,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(getPlayerProfile);
   const updateProfile = useAction(updatePlayerProfile);
 
   const [copied, setCopied] = useState(false);
@@ -97,9 +100,7 @@ export function IdentityPage() {
       refetch();
     } catch (err: unknown) {
       const messageText =
-        err instanceof Error
-          ? err.message
-          : "Error al actualizar perfil.";
+        err instanceof Error ? err.message : "Error al actualizar perfil.";
 
       setMessage({
         type: "error",
@@ -111,7 +112,7 @@ export function IdentityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 transition-colors duration-300 dark:bg-[#1A1C20] dark:text-gray-100 md:p-8">
+    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 transition-colors duration-300 md:p-8 dark:bg-[#1A1C20] dark:text-gray-100">
       {/* Header */}
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -142,7 +143,7 @@ export function IdentityPage() {
       {/* Main Container */}
       <div className="mx-auto mb-8 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
         {/* Digital ID Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#1D3557]/20 bg-gradient-to-br from-white via-slate-50 to-[#F4A261]/10 p-6 shadow-xl transition-all duration-300 dark:border-[#0B5FA5]/40 dark:from-[#2E3138] dark:via-[#2E3138] dark:to-[#0B5FA5]/30 md:col-span-2">
+        <div className="relative overflow-hidden rounded-2xl border border-[#1D3557]/20 bg-gradient-to-br from-white via-slate-50 to-[#F4A261]/10 p-6 shadow-xl transition-all duration-300 md:col-span-2 dark:border-[#0B5FA5]/40 dark:from-[#2E3138] dark:via-[#2E3138] dark:to-[#0B5FA5]/30">
           <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-700">
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5 text-[#FF6B35]" />
@@ -172,11 +173,7 @@ export function IdentityPage() {
               {profile?.photoUrl ? (
                 <img
                   src={profile.photoUrl}
-                  alt={
-                    profile?.fullName ||
-                    user?.username ||
-                    "Foto de perfil"
-                  }
+                  alt={profile?.fullName || user?.username || "Foto de perfil"}
                   className="h-36 w-28 rounded-xl border-2 border-[#1D3557] object-cover shadow-md dark:border-[#0B5FA5]"
                 />
               ) : (

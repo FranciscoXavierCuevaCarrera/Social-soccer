@@ -6,17 +6,17 @@ import { PaymentsPage } from "../payments/PaymentsPage" with { type: "ref" };
 import { StatsPage } from "../stats/StatsPage" with { type: "ref" };
 
 import {
-  getPlayerProfile,
-  getUpcomingMatches,
   getPaymentHistory,
+  getPlayerProfile,
   getPlayerStats,
+  getUpcomingMatches,
 } from "./queries" with { type: "ref" };
 
 import {
-  updatePlayerProfile,
   processPayment,
   submitRefereeRating,
   updateMatchStats,
+  updatePlayerProfile,
 } from "./actions" with { type: "ref" };
 
 export const socialsoccerSpec: Spec = [
@@ -32,11 +32,7 @@ export const socialsoccerSpec: Spec = [
     "/payments",
     page(PaymentsPage, { authRequired: true }),
   ),
-  route(
-    "StatsRoute",
-    "/stats",
-    page(StatsPage, { authRequired: true }),
-  ),
+  route("StatsRoute", "/stats", page(StatsPage, { authRequired: true })),
 
   // Queries
   query(getPlayerProfile, {

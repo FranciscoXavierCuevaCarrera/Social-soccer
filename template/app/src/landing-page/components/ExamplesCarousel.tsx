@@ -22,7 +22,8 @@ export function ExamplesCarousel({ examples }: { examples: ExampleApp[] }) {
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
-      ([entry]: IntersectionObserverEntry[]) => setIsInView(entry.isIntersecting),
+      ([entry]: IntersectionObserverEntry[]) =>
+        setIsInView(entry.isIntersecting),
       {
         threshold: 0.5,
         rootMargin: "-200px 0px -100px 0px",

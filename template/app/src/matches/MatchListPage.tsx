@@ -1,6 +1,5 @@
-import React from "react";
-import { Link, routes } from "wasp/client/router";
 import { getMatches, useQuery } from "wasp/client/operations";
+import { Link, routes } from "wasp/client/router";
 
 export const MatchListPage = () => {
   const { data: matches, isLoading, error } = useQuery(getMatches);

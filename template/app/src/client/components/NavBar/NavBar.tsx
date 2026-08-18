@@ -111,11 +111,7 @@ export function NavBar({
   );
 }
 
-function NavBarDesktopUserDropdown({
-  isScrolled,
-}: {
-  isScrolled: boolean;
-}) {
+function NavBarDesktopUserDropdown({ isScrolled }: { isScrolled: boolean }) {
   const { data: user, isLoading: isUserLoading } = useAuth();
 
   return (
@@ -202,10 +198,7 @@ function NavBarMobileMenu({
           <div className="mt-6 flow-root">
             <div className="divide-border -my-6 divide-y">
               <ul className="space-y-2 py-6">
-                {renderNavigationItems(
-                  navigationItems,
-                  setMobileMenuOpen,
-                )}
+                {renderNavigationItems(navigationItems, setMobileMenuOpen)}
               </ul>
 
               <div className="py-6">
@@ -256,9 +249,7 @@ function renderNavigationItems(
           to={item.to}
           className={menuStyles}
           onClick={
-            setMobileMenuOpen
-              ? () => setMobileMenuOpen(false)
-              : undefined
+            setMobileMenuOpen ? () => setMobileMenuOpen(false) : undefined
           }
           target={item.to.startsWith("http") ? "_blank" : undefined}
         >

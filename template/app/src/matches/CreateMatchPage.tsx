@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link, routes } from "wasp/client/router";
 import { createMatch, useAction } from "wasp/client/operations";
+import { Link, routes } from "wasp/client/router";
 
 export const CreateMatchPage = () => {
   const createMatchAction = useAction(createMatch);
@@ -49,7 +49,7 @@ export const CreateMatchPage = () => {
         <span>←</span> Volver a la lista
       </Link>
 
-      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] sm:p-8">
+      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md sm:p-8 dark:border-gray-700 dark:bg-[#2E3138]">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-[#1D3557] dark:text-white">
             Crear Nuevo Partido

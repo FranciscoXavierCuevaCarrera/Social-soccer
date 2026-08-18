@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Star, CheckCircle2, Award } from 'lucide-react';
+import { Award, CheckCircle2, Star } from "lucide-react";
+import React, { useState } from "react";
 
 interface RefereeRatingFormProps {
   refereeName?: string;
@@ -7,15 +7,20 @@ interface RefereeRatingFormProps {
 }
 
 export function RefereeRatingForm({
-  refereeName = 'Carlos Pérez',
-  matchTitle = 'Fecha 4: El Batán vs San Roque',
+  refereeName = "Carlos Pérez",
+  matchTitle = "Fecha 4: El Batán vs San Roque",
 }: RefereeRatingFormProps) {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
-  const [comment, setComment] = useState<string>('');
+  const [comment, setComment] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const presets = ['Puntualidad excelente', 'Manejo de juego imparcial', 'Criterio claro en tarjetas', 'Buena comunicación'];
+  const presets = [
+    "Puntualidad excelente",
+    "Manejo de juego imparcial",
+    "Criterio claro en tarjetas",
+    "Buena comunicación",
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,33 +30,46 @@ export function RefereeRatingForm({
   };
 
   return (
-    <div className="rounded-xl border p-6 shadow-xl transition-all duration-300
-      bg-white border-slate-200 dark:bg-[#2E3138] dark:border-slate-700"
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <Award className="w-5 h-5 text-[#FF6B35]" />
-        <h3 className="font-bold text-base text-[#1D3557] dark:text-white">Evaluación Arbitral Post-Partido</h3>
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xl transition-all duration-300 dark:border-slate-700 dark:bg-[#2E3138]">
+      <div className="mb-2 flex items-center gap-2">
+        <Award className="h-5 w-5 text-[#FF6B35]" />
+        <h3 className="text-base font-bold text-[#1D3557] dark:text-white">
+          Evaluación Arbitral Post-Partido
+        </h3>
       </div>
-      <p className="text-xs text-muted-foreground mb-4">
-        Califica el desempeño del colegiado asignado para fomentar la transparencia y el Fair Play
+      <p className="text-muted-foreground mb-4 text-xs">
+        Califica el desempeño del colegiado asignado para fomentar la
+        transparencia y el Fair Play
       </p>
 
-      <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 mb-4 text-xs">
-        <span className="block text-muted-foreground font-medium">Encuentro: <strong className="text-foreground">{matchTitle}</strong></span>
-        <span className="block text-muted-foreground font-medium mt-0.5">Árbitro Central: <strong className="text-foreground">{refereeName}</strong></span>
+      <div className="mb-4 rounded-lg bg-slate-50 p-3 text-xs dark:bg-slate-800/60">
+        <span className="text-muted-foreground block font-medium">
+          Encuentro: <strong className="text-foreground">{matchTitle}</strong>
+        </span>
+        <span className="text-muted-foreground mt-0.5 block font-medium">
+          Árbitro Central:{" "}
+          <strong className="text-foreground">{refereeName}</strong>
+        </span>
       </div>
 
       {submitted ? (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-500/40 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200 text-center">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-          <h4 className="font-bold text-sm">¡Evaluación Arbitral Registrada!</h4>
-          <p className="text-xs mt-1">Otorgaste {rating} estrellas a {refereeName}. Gracias por tu retroalimentación.</p>
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 p-4 text-center text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
+          <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
+          <h4 className="text-sm font-bold">
+            ¡Evaluación Arbitral Registrada!
+          </h4>
+          <p className="mt-1 text-xs">
+            Otorgaste {rating} estrellas a {refereeName}. Gracias por tu
+            retroalimentación.
+          </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Star Selection */}
-          <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
-            <span className="text-xs font-semibold mb-2 text-muted-foreground">Calificación por Estrellas (1 a 5):</span>
+          <div className="flex flex-col items-center justify-center rounded-xl bg-slate-50 p-3 dark:bg-slate-800/40">
+            <span className="text-muted-foreground mb-2 text-xs font-semibold">
+              Calificación por Estrellas (1 a 5):
+            </span>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -60,20 +78,20 @@ export function RefereeRatingForm({
                   onClick={() => setRating(star)}
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
-                  className="p-1 transition-transform hover:scale-125 focus:outline-none cursor-pointer"
+                  className="cursor-pointer p-1 transition-transform hover:scale-125 focus:outline-none"
                 >
                   <Star
-                    className={`w-7 h-7 transition-colors ${
+                    className={`h-7 w-7 transition-colors ${
                       (hoverRating || rating) >= star
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-slate-300 dark:text-slate-600'
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-slate-300 dark:text-slate-600"
                     }`}
                   />
                 </button>
               ))}
             </div>
             {rating > 0 && (
-              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 mt-2">
+              <span className="mt-2 text-xs font-bold text-amber-600 dark:text-amber-400">
                 {rating} de 5 Estrellas seleccionadas
               </span>
             )}
@@ -81,14 +99,18 @@ export function RefereeRatingForm({
 
           {/* Preset Feedback Tags */}
           <div>
-            <span className="block text-[11px] font-semibold text-muted-foreground mb-1.5">Comentarios Rápidos:</span>
+            <span className="text-muted-foreground mb-1.5 block text-[11px] font-semibold">
+              Comentarios Rápidos:
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {presets.map((preset) => (
                 <button
                   key={preset}
                   type="button"
-                  onClick={() => setComment((prev) => (prev ? `${prev}, ${preset}` : preset))}
-                  className="text-[11px] px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                  onClick={() =>
+                    setComment((prev) => (prev ? `${prev}, ${preset}` : preset))
+                  }
+                  className="cursor-pointer rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
                 >
                   + {preset}
                 </button>
@@ -100,9 +122,11 @@ export function RefereeRatingForm({
           <div>
             <textarea
               value={comment}
-              onChange={(e) => setComment((e.target as unknown as { value: string }).value)}
+              onChange={(e) =>
+                setComment((e.target as unknown as { value: string }).value)
+              }
               placeholder="Escribe comentarios u observaciones adicionales sobre el arbitraje..."
-              className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent focus:ring-2 focus:ring-[#0B5FA5] outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-transparent p-2.5 text-xs outline-none focus:ring-2 focus:ring-[#0B5FA5] dark:border-slate-700"
               rows={2}
             />
           </div>
@@ -110,10 +134,10 @@ export function RefereeRatingForm({
           <button
             type="submit"
             disabled={rating === 0}
-            className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
+            className={`w-full cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition-all ${
               rating > 0
-                ? 'bg-[#1D3557] text-white hover:bg-[#1D3557]/90 dark:bg-[#0B5FA5] dark:hover:bg-[#0B5FA5]/80'
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-600'
+                ? "bg-[#1D3557] text-white hover:bg-[#1D3557]/90 dark:bg-[#0B5FA5] dark:hover:bg-[#0B5FA5]/80"
+                : "cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600"
             }`}
           >
             Enviar Evaluación de {rating} Estrellas

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   AlertCircle,
   ArrowUpRight,
@@ -8,6 +7,7 @@ import {
   DollarSign,
   Wallet,
 } from "lucide-react";
+import React, { useState } from "react";
 import { useAuth } from "wasp/client/auth";
 import {
   getPaymentHistory,
@@ -54,9 +54,7 @@ export function PaymentsPage() {
     );
   }
 
-  const payments: Payment[] = Array.isArray(paymentList)
-    ? paymentList
-    : [];
+  const payments: Payment[] = Array.isArray(paymentList) ? paymentList : [];
 
   const totalPaid = payments
     .filter((payment) => payment.status === "COMPLETED")
@@ -95,9 +93,7 @@ export function PaymentsPage() {
       refetch();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Error al procesar el pago.";
+        err instanceof Error ? err.message : "Error al procesar el pago.";
 
       setMessage({
         type: "error",
@@ -109,7 +105,7 @@ export function PaymentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 transition-colors duration-300 dark:bg-[#1A1C20] dark:text-gray-100 md:p-8">
+    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 transition-colors duration-300 md:p-8 dark:bg-[#1A1C20] dark:text-gray-100">
       <div className="mx-auto mb-8 flex max-w-5xl flex-col items-start justify-between gap-4 border-b border-gray-200 pb-4 sm:flex-row sm:items-center dark:border-gray-700">
         <div>
           <div className="mb-1 flex items-center gap-2">
@@ -145,9 +141,7 @@ export function PaymentsPage() {
             Pagos Realizados
           </span>
 
-          <div className="text-3xl font-black">
-            ${totalPaid.toFixed(2)}
-          </div>
+          <div className="text-3xl font-black">${totalPaid.toFixed(2)}</div>
 
           <div className="flex items-center gap-1 text-xs text-emerald-300">
             <CheckCircle2 className="h-4 w-4" />
@@ -166,9 +160,7 @@ export function PaymentsPage() {
 
           <div className="flex items-center gap-1 text-xs text-[#E63946]">
             <Clock className="h-4 w-4" />
-            {totalPending > 0
-              ? "Pendiente de cancelación"
-              : "Sin pendientes"}
+            {totalPending > 0 ? "Pendiente de cancelación" : "Sin pendientes"}
           </div>
         </div>
 
@@ -189,7 +181,7 @@ export function PaymentsPage() {
       </div>
 
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] lg:col-span-2">
+        <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-md lg:col-span-2 dark:border-gray-700 dark:bg-[#2E3138]">
           <h2 className="flex items-center gap-2 text-xl font-bold text-[#1D3557] dark:text-white">
             <CreditCard className="h-5 w-5 text-[#0B5FA5] dark:text-[#FF6B35]" />
             Historial de Transacciones
@@ -216,8 +208,7 @@ export function PaymentsPage() {
                     </p>
 
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      📅{" "}
-                      {new Date(payment.createdAt).toLocaleDateString()} —{" "}
+                      📅 {new Date(payment.createdAt).toLocaleDateString()} —{" "}
                       {new Date(payment.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",

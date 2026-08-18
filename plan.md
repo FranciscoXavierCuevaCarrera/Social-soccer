@@ -1,13 +1,14 @@
 # Architectural Plan (plan.md) — SocialSoccer MVP
 
 ## 1. Arquitectura General y Stack Tecnológico
+
 SocialSoccer se construye utilizando el boilerplate **Open SaaS** para garantizar una arquitectura moderna, escalable y segura.
 
-* **Frontend:** Next.js (App Router), React, Tailwind CSS (soporte dual para Modo Oscuro/Claro).
-* **Backend:** Next.js Server Actions / API Routes.
-* **Base de Datos:** PostgreSQL administrado vía **Prisma ORM**.
-* **Autenticación:** NextAuth.js / Supabase Auth.
-* **Prototipado UI (Google Stitch):** [Prototipo Oficial Google Stitch](https://stitch.withgoogle.com/projects/11720181075081878902) (Estándar visual de 5 pantallas en Modo Oscuro #0B5FA5 y Modo Claro #1D3557).
+- **Frontend:** Next.js (App Router), React, Tailwind CSS (soporte dual para Modo Oscuro/Claro).
+- **Backend:** Next.js Server Actions / API Routes.
+- **Base de Datos:** PostgreSQL administrado vía **Prisma ORM**.
+- **Autenticación:** NextAuth.js / Supabase Auth.
+- **Prototipado UI (Google Stitch):** [Prototipo Oficial Google Stitch](https://stitch.withgoogle.com/projects/11720181075081878902) (Estándar visual de 5 pantallas en Modo Oscuro #0B5FA5 y Modo Claro #1D3557).
 
 ---
 
@@ -37,3 +38,4 @@ app/
 │   ├── payments/            # [Pilar 2] Módulo Fintech & Ticketing
 │   └── stats/               # [Pilar 4] Fair Play & Evaluación Arbitral
 └── api/                     # Webhooks de pago y Server Actions
+```

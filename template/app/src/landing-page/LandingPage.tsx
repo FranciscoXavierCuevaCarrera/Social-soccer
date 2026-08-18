@@ -1,4 +1,3 @@
-import React from "react";
 import ThemeToggle from "../client/components/ThemeToggle";
 
 const solutions = [
@@ -160,9 +159,9 @@ export function LandingPage() {
               </h1>
 
               <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl dark:text-slate-300">
-                SocialSoccer centraliza la identidad deportiva, los partidos,
-                la logística, los pagos y el rendimiento de los jugadores en
-                una sola plataforma.
+                SocialSoccer centraliza la identidad deportiva, los partidos, la
+                logística, los pagos y el rendimiento de los jugadores en una
+                sola plataforma.
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -227,9 +226,7 @@ export function LandingPage() {
                         Próximo encuentro
                       </p>
 
-                      <h3 className="mt-2 text-2xl font-black">
-                        Cancha 1
-                      </h3>
+                      <h3 className="mt-2 text-2xl font-black">Cancha 1</h3>
 
                       <p className="mt-1 text-sm text-white/70">
                         Liga Barrial · Partido programado
@@ -247,9 +244,7 @@ export function LandingPage() {
                         Fecha
                       </p>
 
-                      <p className="mt-1 font-bold">
-                        Próximo partido
-                      </p>
+                      <p className="mt-1 font-bold">Próximo partido</p>
                     </div>
 
                     <div className="rounded-xl bg-white/10 p-3">
@@ -257,9 +252,7 @@ export function LandingPage() {
                         Jugadores
                       </p>
 
-                      <p className="mt-1 font-bold">
-                        8 / 10
-                      </p>
+                      <p className="mt-1 font-bold">8 / 10</p>
                     </div>
                   </div>
                 </div>
@@ -359,9 +352,8 @@ export function LandingPage() {
               </h2>
 
               <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
-                Una plataforma pensada para conectar jugadores, equipos y
-                ligas barriales alrededor de la información que realmente
-                necesitan.
+                Una plataforma pensada para conectar jugadores, equipos y ligas
+                barriales alrededor de la información que realmente necesitan.
               </p>
             </div>
 
@@ -607,9 +599,7 @@ export function LandingPage() {
             </a>
           </div>
 
-          <p className="text-xs text-slate-400">
-            © 2026 SocialSoccer
-          </p>
+          <p className="text-xs text-slate-400">© 2026 SocialSoccer</p>
         </div>
       </footer>
     </div>

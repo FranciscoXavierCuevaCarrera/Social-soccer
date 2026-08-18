@@ -46,10 +46,7 @@ export const getPlayerProfile: GetPlayerProfile<
       profile = await context.entities.PlayerProfile.create({
         data: {
           userId: context.user.id,
-          fullName:
-            context.user.username ||
-            context.user.email ||
-            "Jugador",
+          fullName: context.user.username || context.user.email || "Jugador",
           stats: {
             create: {
               goals: 0,
@@ -71,13 +68,9 @@ export const getPlayerProfile: GetPlayerProfile<
       throw error;
     }
 
-    const msg =
-      error instanceof Error ? error.message : String(error);
+    const msg = error instanceof Error ? error.message : String(error);
 
-    throw new HttpError(
-      500,
-      `Error al obtener el perfil del jugador: ${msg}`,
-    );
+    throw new HttpError(500, `Error al obtener el perfil del jugador: ${msg}`);
   }
 };
 
@@ -106,13 +99,9 @@ export const getUpcomingMatches: GetUpcomingMatches<
       throw error;
     }
 
-    const msg =
-      error instanceof Error ? error.message : String(error);
+    const msg = error instanceof Error ? error.message : String(error);
 
-    throw new HttpError(
-      500,
-      `Error al obtener próximos partidos: ${msg}`,
-    );
+    throw new HttpError(500, `Error al obtener próximos partidos: ${msg}`);
   }
 };
 
@@ -135,36 +124,28 @@ export const getPaymentHistory: GetPaymentHistory<
       throw error;
     }
 
-    const msg =
-      error instanceof Error ? error.message : String(error);
+    const msg = error instanceof Error ? error.message : String(error);
 
-    throw new HttpError(
-      500,
-      `Error al obtener historial de pagos: ${msg}`,
-    );
+    throw new HttpError(500, `Error al obtener historial de pagos: ${msg}`);
   }
 };
 
-export const getPlayerStats: GetPlayerStats<
-  void,
-  PlayerStats
-> = async (_args, context: SocialSoccerQueryContext) => {
+export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (
+  _args,
+  context: SocialSoccerQueryContext,
+) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
 
   try {
-    const profile =
-      await context.entities.PlayerProfile.findUnique({
-        where: { userId: context.user.id },
-        include: { stats: true },
-      });
+    const profile = await context.entities.PlayerProfile.findUnique({
+      where: { userId: context.user.id },
+      include: { stats: true },
+    });
 
     if (!profile || !profile.stats) {
-      throw new HttpError(
-        404,
-        "Estadísticas de jugador no encontradas",
-      );
+      throw new HttpError(404, "Estadísticas de jugador no encontradas");
     }
 
     return profile.stats;
@@ -173,8 +154,7 @@ export const getPlayerStats: GetPlayerStats<
       throw error;
     }
 
-    const msg =
-      error instanceof Error ? error.message : String(error);
+    const msg = error instanceof Error ? error.message : String(error);
 
     throw new HttpError(
       500,

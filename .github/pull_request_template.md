@@ -6,5 +6,5 @@
 
 > Make sure to do the following steps if they are applicable to your PR:
 
-* [ ] **Update e2e tests**: If you changed the [/template/app](/template/app), make sure to update [/template/e2e-tests](/template/e2e-tests) as necessary.
-* [ ] **Update docs**: If needed, update the project documentation.
+- [ ] **Update e2e tests**: If you changed the [/template/app](/template/app), make sure to update [/template/e2e-tests](/template/e2e-tests) as necessary.
+- [ ] **Update docs**: If needed, update the project documentation.

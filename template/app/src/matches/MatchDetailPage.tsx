@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useParams } from "react-router";
 import { useAuth } from "wasp/client/auth";
 import {
   getMatch,
@@ -8,7 +9,6 @@ import {
   useQuery,
 } from "wasp/client/operations";
 import { Link, routes } from "wasp/client/router";
-import { useParams } from "react-router";
 
 export const MatchDetailPage = () => {
   const { id: matchId } = useParams<{ id: string }>();
@@ -92,9 +92,7 @@ export const MatchDetailPage = () => {
       refetch();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Error al unirse al partido";
+        err instanceof Error ? err.message : "Error al unirse al partido";
 
       setMessage({
         type: "error",
@@ -120,9 +118,7 @@ export const MatchDetailPage = () => {
       refetch();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Error al salir del partido";
+        err instanceof Error ? err.message : "Error al salir del partido";
 
       setMessage({
         type: "error",
@@ -154,7 +150,7 @@ export const MatchDetailPage = () => {
         </div>
       )}
 
-      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] sm:p-8">
+      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md sm:p-8 dark:border-gray-700 dark:bg-[#2E3138]">
         <div className="flex flex-col justify-between gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-center dark:border-gray-700">
           <div>
             <div className="mb-2 flex items-center gap-2">
@@ -237,7 +233,7 @@ export const MatchDetailPage = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138] sm:p-8">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md sm:p-8 dark:border-gray-700 dark:bg-[#2E3138]">
         <h2 className="mb-4 text-xl font-bold text-[#1D3557] dark:text-white">
           Jugadores Confirmados ({match.players?.length || 0})
         </h2>

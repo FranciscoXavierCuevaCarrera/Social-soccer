@@ -30,13 +30,12 @@ import { uploadFileWithProgress, validateFile } from "./fileUploading";
 import { ALLOWED_FILE_TYPES } from "./validation";
 
 export function FileUploadPage() {
-  const [fileKeyForS3, setFileKeyForS3] =
-    useState<FileEntity["s3Key"]>("");
-  const [uploadProgressPercent, setUploadProgressPercent] =
-    useState<number>(0);
-  const [fileToDelete, setFileToDelete] = useState<
-    Pick<FileEntity, "id" | "s3Key" | "name"> | null
-  >(null);
+  const [fileKeyForS3, setFileKeyForS3] = useState<FileEntity["s3Key"]>("");
+  const [uploadProgressPercent, setUploadProgressPercent] = useState<number>(0);
+  const [fileToDelete, setFileToDelete] = useState<Pick<
+    FileEntity,
+    "id" | "s3Key" | "name"
+  > | null>(null);
 
   const allUserFiles = useQuery(getAllFilesByUser, undefined, {
     // We disable automatic refetching because otherwise files would be refetched after `createFile` is called and the S3 URL is returned,
@@ -44,14 +43,12 @@ export function FileUploadPage() {
     enabled: false,
   });
 
-  const {
-    isLoading: isDownloadUrlLoading,
-    refetch: refetchDownloadUrl,
-  } = useQuery(
-    getDownloadFileSignedURL,
-    { s3Key: fileKeyForS3 },
-    { enabled: false },
-  );
+  const { isLoading: isDownloadUrlLoading, refetch: refetchDownloadUrl } =
+    useQuery(
+      getDownloadFileSignedURL,
+      { s3Key: fileKeyForS3 },
+      { enabled: false },
+    );
 
   useEffect(() => {
     allUserFiles.refetch();
@@ -63,10 +60,7 @@ export function FileUploadPage() {
         .then((urlQuery) => {
           switch (urlQuery.status) {
             case "error":
-              console.error(
-                "Error fetching download URL",
-                urlQuery.error,
-              );
+              console.error("Error fetching download URL", urlQuery.error);
               toast({
                 title: "Error fetching download link",
                 description: "Please try again later.",
@@ -108,11 +102,10 @@ export function FileUploadPage() {
 
       const file = validateFile(formDataFileUpload);
 
-      const { s3UploadUrl, s3UploadFields, s3Key } =
-        await createFileUploadUrl({
-          fileType: file.type,
-          fileName: file.name,
-        });
+      const { s3UploadUrl, s3UploadFields, s3Key } = await createFileUploadUrl({
+        fileType: file.type,
+        fileName: file.name,
+      });
 
       await uploadFileWithProgress({
         file,
@@ -278,9 +271,7 @@ export function FileUploadPage() {
 
                           <div className="flex items-center justify-end gap-2">
                             <Button
-                              onClick={() =>
-                                setFileKeyForS3(file.s3Key)
-                              }
+                              onClick={() => setFileKeyForS3(file.s3Key)}
                               disabled={
                                 file.s3Key === fileKeyForS3 &&
                                 isDownloadUrlLoading
@@ -318,9 +309,7 @@ export function FileUploadPage() {
       {fileToDelete && (
         <Dialog
           open={!!fileToDelete}
-          onOpenChange={(isOpen) =>
-            !isOpen && setFileToDelete(null)
-          }
+          onOpenChange={(isOpen) => !isOpen && setFileToDelete(null)}
         >
           <DialogContent>
             <DialogHeader>
@@ -333,10 +322,7 @@ export function FileUploadPage() {
             </DialogHeader>
 
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setFileToDelete(null)}
-              >
+              <Button variant="outline" onClick={() => setFileToDelete(null)}>
                 Cancel
               </Button>
 
