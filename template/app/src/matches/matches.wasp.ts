@@ -8,6 +8,7 @@ import {
   createMatch,
   getMatch,
   getMatches,
+  getReferees,
   joinMatch,
   leaveMatch,
 } from "./operations" with { type: "ref" };
@@ -18,16 +19,22 @@ export const matchesSpec = [
     "/matches",
     page(MatchListPage, { authRequired: true }),
   ),
+
   route(
     "CreateMatchRoute",
     "/matches/create",
     page(CreateMatchPage, { authRequired: true }),
   ),
+
   route(
     "MatchDetailRoute",
     "/matches/:id",
     page(MatchDetailPage, { authRequired: true }),
   ),
+
+  query(getReferees, {
+    entities: ["Referee"],
+  }),
 
   query(getMatches, {
     entities: ["Match", "MatchPlayer"],
@@ -38,7 +45,7 @@ export const matchesSpec = [
   }),
 
   action(createMatch, {
-    entities: ["Match", "MatchPlayer"],
+    entities: ["Match", "MatchPlayer", "Referee"],
   }),
 
   action(joinMatch, {

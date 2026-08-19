@@ -4,15 +4,49 @@ import { type User } from "wasp/entities";
 
 type MockUserData = Omit<User, "id">;
 
-/**
- * This function, which we've imported in `app.db.seeds` in the `main.wasp` file,
- * seeds the database with mock users via the `wasp db seed` command.
- * For more info see: https://wasp.sh/docs/data-model/backends#seeding-the-database
- */
 export async function seedMockUsers(prismaClient: PrismaClient) {
   await Promise.all(
-    generateMockUsersData(50).map((data) => prismaClient.user.create({ data })),
+    generateMockUsersData(50).map((data) =>
+      prismaClient.user.create({ data }),
+    ),
   );
+
+  const referees = [
+    {
+      fullName: "David Gilmour",
+      badgeNumber: "REF-001",
+      averageRating: 4.8,
+    },
+    {
+      fullName: "Syd Barrett",
+      badgeNumber: "REF-002",
+      averageRating: 4.6,
+    },
+    {
+      fullName: "Richard Wright",
+      badgeNumber: "REF-003",
+      averageRating: 4.9,
+    },
+    {
+      fullName: "Nick Mason",
+      badgeNumber: "REF-004",
+      averageRating: 4.7,
+    },
+  ];
+
+  for (const referee of referees) {
+    const existing = await prismaClient.referee.findFirst({
+      where: {
+        fullName: referee.fullName,
+      },
+    });
+
+    if (!existing) {
+      await prismaClient.referee.create({
+        data: referee,
+      });
+    }
+  }
 }
 
 function generateMockUsersData(numOfUsers: number): MockUserData[] {
@@ -24,6 +58,7 @@ function generateMockUserData(): MockUserData {
   const lastName = faker.person.lastName();
   const now = new Date();
   const createdAt = faker.date.past({ refDate: now });
+
   return {
     email: faker.internet.email({ firstName, lastName }),
     username: faker.internet.userName({ firstName, lastName }),

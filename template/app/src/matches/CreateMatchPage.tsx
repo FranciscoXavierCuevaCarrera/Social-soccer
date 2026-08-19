@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { createMatch, useAction } from "wasp/client/operations";
+import {
+  createMatch,
+  getReferees,
+  useAction,
+  useQuery,
+} from "wasp/client/operations";
 import { Link, routes } from "wasp/client/router";
 
 export const CreateMatchPage = () => {
   const createMatchAction = useAction(createMatch);
+  const {
+    data: referees,
+    isLoading: isRefereesLoading,
+  } = useQuery(getReferees);
 
   const [location, setLocation] = useState("");
   const [dateTime, setDateTime] = useState("");
   const [maxPlayers, setMaxPlayers] = useState(10);
+  const [refereeId, setRefereeId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -27,6 +37,7 @@ export const CreateMatchPage = () => {
         location,
         dateTime,
         maxPlayers: Number(maxPlayers),
+        refereeId: refereeId || null,
       });
 
       window.location.href = `/matches/${newMatch.id}`;
@@ -56,8 +67,8 @@ export const CreateMatchPage = () => {
           </h1>
 
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Organiza una pichanga o partido oficial especificando la cancha y
-            horario.
+            Organiza una pichanga o partido oficial especificando la cancha,
+            horario y árbitro.
           </p>
         </div>
 
@@ -111,6 +122,35 @@ export const CreateMatchPage = () => {
               className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-[#0B5FA5] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               required
             />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+              🟨 Árbitro Asignado
+            </label>
+
+            <select
+              value={refereeId}
+              onChange={(e) => setRefereeId(e.target.value)}
+              disabled={isRefereesLoading}
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-[#0B5FA5] disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">
+                {isRefereesLoading
+                  ? "Cargando árbitros..."
+                  : "Sin árbitro asignado"}
+              </option>
+
+              {referees?.map((referee) => (
+                <option key={referee.id} value={referee.id}>
+                  {referee.fullName} — ⭐ {referee.averageRating.toFixed(1)}
+                </option>
+              ))}
+            </select>
+
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Puedes crear el partido sin árbitro y asignarlo posteriormente.
+            </p>
           </div>
 
           <button

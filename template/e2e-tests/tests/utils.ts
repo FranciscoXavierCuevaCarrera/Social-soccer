@@ -29,10 +29,7 @@ export const signUserUp = async ({
 
   await page.fill('input[name="email"]', user.email);
 
-  await page.fill(
-    'input[name="password"]',
-    user.password ?? DEFAULT_PASSWORD,
-  );
+  await page.fill('input[name="password"]', user.password ?? DEFAULT_PASSWORD);
 
   const signupResponse = page.waitForResponse(
     (response) =>
@@ -49,23 +46,14 @@ export const signUserUp = async ({
   await page.waitForLoadState("domcontentloaded");
 };
 
-export const logUserIn = async ({
-  page,
-  user,
-}: {
-  page: Page;
-  user: User;
-}) => {
+export const logUserIn = async ({ page, user }: { page: Page; user: User }) => {
   await page.goto("/login", {
     waitUntil: "domcontentloaded",
   });
 
   await page.fill('input[name="email"]', user.email);
 
-  await page.fill(
-    'input[name="password"]',
-    user.password ?? DEFAULT_PASSWORD,
-  );
+  await page.fill('input[name="password"]', user.password ?? DEFAULT_PASSWORD);
 
   const loginResponse = page.waitForResponse(
     (response) =>

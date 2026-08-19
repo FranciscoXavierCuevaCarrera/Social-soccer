@@ -7,7 +7,7 @@ export const MatchListPage = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#0B5FA5] dark:border-[#FF6B35]"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#0B5FA5] dark:border-[#FF6B35]" />
       </div>
     );
   }
@@ -93,6 +93,11 @@ export const MatchListPage = () => {
                       dateStyle: "medium",
                       timeStyle: "short",
                     })}
+                  </p>
+
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                    ⚖️ Árbitro:{" "}
+                    {match.referee?.fullName || "Sin árbitro asignado"}
                   </p>
                 </div>
 

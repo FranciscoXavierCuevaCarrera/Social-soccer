@@ -2,7 +2,7 @@ import { type PrismaClient } from "@prisma/client";
 import { type User } from "wasp/entities";
 import { HttpError } from "wasp/server";
 
-type MatchesContext = {
+type BaseMatchesContext = {
   user?: User;
   entities: {
     Match: PrismaClient["match"];
@@ -10,7 +10,41 @@ type MatchesContext = {
   };
 };
 
-export const getMatches = async (_args: void, context: MatchesContext) => {
+type RefereeContext = {
+  user?: User;
+  entities: {
+    Referee: PrismaClient["referee"];
+  };
+};
+
+type CreateMatchContext = {
+  user?: User;
+  entities: {
+    Match: PrismaClient["match"];
+    MatchPlayer: PrismaClient["matchPlayer"];
+    Referee: PrismaClient["referee"];
+  };
+};
+
+export const getReferees = async (
+  _args: void,
+  context: RefereeContext,
+) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  return context.entities.Referee.findMany({
+    orderBy: {
+      fullName: "asc",
+    },
+  });
+};
+
+export const getMatches = async (
+  _args: void,
+  context: BaseMatchesContext,
+) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -42,7 +76,7 @@ export const getMatches = async (_args: void, context: MatchesContext) => {
 
 export const getMatch = async (
   args: { id: string },
-  context: MatchesContext,
+  context: BaseMatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -80,8 +114,9 @@ export const createMatch = async (
     location: string;
     dateTime: string;
     maxPlayers: number;
+    refereeId?: string | null;
   },
-  context: MatchesContext,
+  context: CreateMatchContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -113,7 +148,22 @@ export const createMatch = async (
     args.maxPlayers < 2 ||
     args.maxPlayers > 30
   ) {
-    throw new HttpError(400, "El número de jugadores debe estar entre 2 y 30");
+    throw new HttpError(
+      400,
+      "El número de jugadores debe estar entre 2 y 30",
+    );
+  }
+
+  if (args.refereeId) {
+    const referee = await context.entities.Referee.findUnique({
+      where: {
+        id: args.refereeId,
+      },
+    });
+
+    if (!referee) {
+      throw new HttpError(404, "Árbitro no encontrado");
+    }
   }
 
   return context.entities.Match.create({
@@ -122,13 +172,14 @@ export const createMatch = async (
       dateTime: matchDate,
       maxPlayers: args.maxPlayers,
       createdById: context.user.id,
+      refereeId: args.refereeId || null,
     },
   });
 };
 
 export const joinMatch = async (
   args: { matchId: string },
-  context: MatchesContext,
+  context: BaseMatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -164,7 +215,10 @@ export const joinMatch = async (
   });
 
   if (existing) {
-    throw new HttpError(400, "Ya estás inscrito en este partido");
+    throw new HttpError(
+      400,
+      "Ya estás inscrito en este partido",
+    );
   }
 
   if (match.players.length >= match.maxPlayers) {
@@ -181,7 +235,7 @@ export const joinMatch = async (
 
 export const leaveMatch = async (
   args: { matchId: string },
-  context: MatchesContext,
+  context: BaseMatchesContext,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -197,7 +251,10 @@ export const leaveMatch = async (
   });
 
   if (!existing) {
-    throw new HttpError(400, "No estás inscrito en este partido");
+    throw new HttpError(
+      400,
+      "No estás inscrito en este partido",
+    );
   }
 
   await context.entities.MatchPlayer.delete({
