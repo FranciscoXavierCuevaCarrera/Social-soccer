@@ -1,4 +1,5 @@
 import type {
+  Match,
   Payment,
   PlayerProfile,
   PlayerStats,
@@ -7,6 +8,7 @@ import type {
 } from "wasp/entities";
 import { HttpError } from "wasp/server";
 import type {
+  CreateMatch,
   ProcessPayment,
   SubmitRefereeRating,
   UpdateMatchStats,
@@ -214,5 +216,52 @@ export const updateMatchStats: UpdateMatchStats<
       500,
       `Error al actualizar estadísticas del partido: ${msg}`,
     );
+  }
+};
+
+type CreateMatchInput = {
+  date: string;
+  time: string;
+  homeTeam: string;
+  awayTeam: string;
+  fieldId: string;
+  refereeId?: string;
+  weatherAlert?: string;
+};
+
+export const createMatch: CreateMatch<CreateMatchInput, Match> = async (
+  args,
+  context,
+) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  if (args.refereeId) {
+    const referee = await context.entities.Referee.findUnique({
+      where: { id: args.refereeId },
+    });
+    if (!referee) {
+      throw new HttpError(404, "Árbitro no encontrado");
+    }
+  }
+
+  try {
+    return await context.entities.Match.create({
+      data: {
+        date: new Date(args.date),
+        time: args.time,
+        homeTeam: args.homeTeam,
+        awayTeam: args.awayTeam,
+        fieldId: args.fieldId,
+        refereeId: args.refereeId || null,
+        weatherAlert: args.weatherAlert || null,
+        status: "SCHEDULED",
+      },
+    });
+  } catch (error: unknown) {
+    if (error instanceof HttpError) throw error;
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al crear el partido: ${msg}`);
   }
 };

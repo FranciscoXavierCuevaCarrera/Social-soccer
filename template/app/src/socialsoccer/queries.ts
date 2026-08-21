@@ -1,37 +1,25 @@
-import { type PrismaClient } from "@prisma/client";
-import {
-  type Field,
-  type Match,
-  type Payment,
-  type PlayerProfile,
-  type PlayerStats,
-  type Referee,
+import type {
+  Field,
+  Match,
+  Payment,
+  PlayerProfile,
+  PlayerStats,
+  Referee,
 } from "wasp/entities";
 import { HttpError } from "wasp/server";
 import type {
+  GetFields,
   GetPaymentHistory,
   GetPlayerProfile,
   GetPlayerStats,
+  GetReferees,
   GetUpcomingMatches,
 } from "wasp/server/operations";
-
-type SocialSoccerQueryContext = {
-  user?: {
-    id: string;
-    username?: string | null;
-    email?: string | null;
-  };
-  entities: {
-    PlayerProfile: PrismaClient["playerProfile"];
-    Match: PrismaClient["match"];
-    Payment: PrismaClient["payment"];
-  };
-};
 
 export const getPlayerProfile: GetPlayerProfile<
   void,
   PlayerProfile & { stats: PlayerStats | null }
-> = async (_args, context: SocialSoccerQueryContext) => {
+> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -64,23 +52,16 @@ export const getPlayerProfile: GetPlayerProfile<
 
     return profile;
   } catch (error: unknown) {
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
+    if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-
     throw new HttpError(500, `Error al obtener el perfil del jugador: ${msg}`);
   }
 };
 
 export const getUpcomingMatches: GetUpcomingMatches<
   void,
-  (Match & {
-    field: Field | null;
-    referee: Referee | null;
-  })[]
-> = async (_args, context: SocialSoccerQueryContext) => {
+  (Match & { field: Field; referee: Referee | null })[]
+> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -88,19 +69,12 @@ export const getUpcomingMatches: GetUpcomingMatches<
   try {
     return await context.entities.Match.findMany({
       where: { status: "SCHEDULED" },
-      include: {
-        field: true,
-        referee: true,
-      },
+      include: { field: true, referee: true },
       orderBy: { date: "asc" },
     });
   } catch (error: unknown) {
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
+    if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-
     throw new HttpError(500, `Error al obtener próximos partidos: ${msg}`);
   }
 };
@@ -108,7 +82,7 @@ export const getUpcomingMatches: GetUpcomingMatches<
 export const getPaymentHistory: GetPaymentHistory<
   void,
   (Payment & { match: Match | null })[]
-> = async (_args, context: SocialSoccerQueryContext) => {
+> = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -120,19 +94,15 @@ export const getPaymentHistory: GetPaymentHistory<
       orderBy: { createdAt: "desc" },
     });
   } catch (error: unknown) {
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
+    if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-
     throw new HttpError(500, `Error al obtener historial de pagos: ${msg}`);
   }
 };
 
 export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (
   _args,
-  context: SocialSoccerQueryContext,
+  context,
 ) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
@@ -150,15 +120,46 @@ export const getPlayerStats: GetPlayerStats<void, PlayerStats> = async (
 
     return profile.stats;
   } catch (error: unknown) {
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
+    if (error instanceof HttpError) throw error;
     const msg = error instanceof Error ? error.message : String(error);
-
     throw new HttpError(
       500,
       `Error al obtener estadísticas del jugador: ${msg}`,
     );
+  }
+};
+
+export const getReferees: GetReferees<void, Referee[]> = async (
+  _args,
+  context,
+) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  try {
+    return await context.entities.Referee.findMany({
+      orderBy: { fullName: "asc" },
+    });
+  } catch (error: unknown) {
+    if (error instanceof HttpError) throw error;
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener árbitros: ${msg}`);
+  }
+};
+
+export const getFields: GetFields<void, Field[]> = async (_args, context) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  try {
+    return await context.entities.Field.findMany({
+      orderBy: { name: "asc" },
+    });
+  } catch (error: unknown) {
+    if (error instanceof HttpError) throw error;
+    const msg = error instanceof Error ? error.message : String(error);
+    throw new HttpError(500, `Error al obtener canchas: ${msg}`);
   }
 };

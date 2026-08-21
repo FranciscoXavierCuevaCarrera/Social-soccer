@@ -1,18 +1,21 @@
 import { action, page, query, route, type Spec } from "@wasp.sh/spec";
 
-import { AppPage } from "../app/AppPage" with { type: "ref" };
 import { IdentityPage } from "../identity/IdentityPage" with { type: "ref" };
+import { MatchesPage } from "../matches/MatchesPage" with { type: "ref" };
 import { PaymentsPage } from "../payments/PaymentsPage" with { type: "ref" };
 import { StatsPage } from "../stats/StatsPage" with { type: "ref" };
 
 import {
+  getFields,
   getPaymentHistory,
   getPlayerProfile,
   getPlayerStats,
+  getReferees,
   getUpcomingMatches,
 } from "./queries" with { type: "ref" };
 
 import {
+  createMatch,
   processPayment,
   submitRefereeRating,
   updateMatchStats,
@@ -21,12 +24,12 @@ import {
 
 export const socialsoccerSpec: Spec = [
   // Rutas y Páginas
-  route("AppRoute", "/app", page(AppPage, { authRequired: true })),
   route(
     "IdentityRoute",
     "/identity",
     page(IdentityPage, { authRequired: true }),
   ),
+  route("MatchesRoute", "/matches", page(MatchesPage, { authRequired: true })),
   route(
     "PaymentsRoute",
     "/payments",
@@ -41,49 +44,66 @@ export const socialsoccerSpec: Spec = [
       "PlayerProfile",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
       "Ticket",
     ],
   }),
-
   query(getUpcomingMatches, {
     entities: [
       "User",
       "PlayerProfile",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
       "Ticket",
     ],
   }),
-
   query(getPaymentHistory, {
     entities: [
       "User",
       "PlayerProfile",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
       "Field",
       "Referee",
       "Payment",
       "Ticket",
     ],
   }),
-
   query(getPlayerStats, {
     entities: [
       "User",
       "PlayerProfile",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
+      "Field",
+      "Referee",
+      "Payment",
+      "Ticket",
+    ],
+  }),
+  query(getReferees, {
+    entities: [
+      "User",
+      "PlayerProfile",
+      "PlayerStats",
+      "Match",
+      "Field",
+      "Referee",
+      "Payment",
+      "Ticket",
+    ],
+  }),
+  query(getFields, {
+    entities: [
+      "User",
+      "PlayerProfile",
+      "PlayerStats",
+      "Match",
       "Field",
       "Referee",
       "Payment",
@@ -101,10 +121,8 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
     ],
   }),
-
   action(processPayment, {
     entities: [
       "PlayerProfile",
@@ -114,10 +132,8 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
     ],
   }),
-
   action(submitRefereeRating, {
     entities: [
       "PlayerProfile",
@@ -127,10 +143,8 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
     ],
   }),
-
   action(updateMatchStats, {
     entities: [
       "PlayerProfile",
@@ -140,7 +154,17 @@ export const socialsoccerSpec: Spec = [
       "Referee",
       "PlayerStats",
       "Match",
-      "MatchPlayer",
+    ],
+  }),
+  action(createMatch, {
+    entities: [
+      "PlayerProfile",
+      "Payment",
+      "Ticket",
+      "RefereeRating",
+      "Referee",
+      "PlayerStats",
+      "Match",
     ],
   }),
 ];

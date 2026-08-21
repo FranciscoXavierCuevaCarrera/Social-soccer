@@ -9,37 +9,30 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async ({ browser }) => {
   page = await browser.newPage();
   testUser = createRandomUser();
-
   await signUserUp({ page, user: testUser });
   await logUserIn({ page, user: testUser });
-
-  console.log("URL DESPUÉS DEL LOGIN:", page.url());
 });
 
 test.afterAll(async () => {
   await page.close();
 });
 
-test.describe("Social Soccer - Auth Redirects", () => {
-  test("usuario autenticado que visita /login es redirigido a /app", async () => {
-    console.log("URL ANTES DE /login:", page.url());
-
+test.describe("auth redirect tests", () => {
+  test("logged-in user visiting /login should redirect to /matches", async () => {
+    // User is already logged in from beforeAll
     await page.goto("/login");
-    await page.waitForTimeout(2000);
 
-    console.log("URL DESPUÉS DE /login:", page.url());
-
-    await expect(page).toHaveURL(/\/app/);
+    // Should be redirected to /matches
+    await page.waitForURL("**/matches", { timeout: 5000 });
+    expect(page.url()).toContain("/matches");
   });
 
-  test("usuario autenticado que visita /signup es redirigido a /app", async () => {
-    console.log("URL ANTES DE /signup:", page.url());
-
+  test("logged-in user visiting /signup should redirect to /matches", async () => {
+    // User is already logged in from beforeAll
     await page.goto("/signup");
-    await page.waitForTimeout(2000);
 
-    console.log("URL DESPUÉS DE /signup:", page.url());
-
-    await expect(page).toHaveURL(/\/app/);
+    // Should be redirected to /matches
+    await page.waitForURL("**/matches", { timeout: 5000 });
+    expect(page.url()).toContain("/matches");
   });
 });

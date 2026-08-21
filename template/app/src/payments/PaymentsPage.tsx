@@ -1,291 +1,290 @@
 import {
-  AlertCircle,
-  ArrowUpRight,
   CheckCircle2,
-  Clock,
   CreditCard,
-  DollarSign,
-  Wallet,
+  History,
+  QrCode,
+  Ticket,
 } from "lucide-react";
-import React, { useState } from "react";
-import { useAuth } from "wasp/client/auth";
-import {
-  getPaymentHistory,
-  processPayment,
-  useAction,
-  useQuery,
-} from "wasp/client/operations";
-import type { Payment } from "wasp/entities";
+import { useState } from "react";
+import ThemeToggle from "../client/components/ThemeToggle";
 
 export function PaymentsPage() {
-  const { data: user } = useAuth();
-  const {
-    data: paymentList,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery(getPaymentHistory);
+  const [paymentStatus, setPaymentStatus] = useState<"PENDING" | "COMPLETED">(
+    "PENDING",
+  );
+  const [selectedMethod, setSelectedMethod] = useState<
+    "DEUNA" | "CARD" | "TRANSFER"
+  >("DEUNA");
+  const [showTicketModal, setShowTicketModal] = useState(false);
 
-  const executePayment = useAction(processPayment);
+  const transactions = [
+    {
+      id: "PAY-9041",
+      date: "27 de Julio, 2026",
+      concept: "Vocalía Partido vs Atlético San Roque",
+      amount: 5.0,
+      method: "Deuna (QR)",
+      status: "COMPLETED",
+    },
+    {
+      id: "PAY-8820",
+      date: "15 de Julio, 2026",
+      concept: "Inscripción Anual Torneo Interligas 2026",
+      amount: 25.0,
+      method: "Tarjeta de Crédito",
+      status: "COMPLETED",
+    },
+    {
+      id: "PAY-7102",
+      date: "02 de Julio, 2026",
+      concept: "Multa Tarjeta Amarilla (Fecha 4)",
+      amount: 2.5,
+      method: "Transferencia",
+      status: "COMPLETED",
+    },
+  ];
 
-  const [amount, setAmount] = useState<number>(10);
-  const [concept, setConcept] = useState("Cuota de Vocalía / Arbitraje");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "error" | "success";
-    text: string;
-  } | null>(null);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#0B5FA5] dark:border-[#FF6B35]" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="mx-auto my-12 max-w-xl rounded-xl border border-[#E63946] bg-red-50 p-6 text-center dark:bg-[#2E3138]">
-        <p className="font-medium text-[#E63946]">
-          Error al cargar las transacciones de pago.
-        </p>
-      </div>
-    );
-  }
-
-  const payments: Payment[] = Array.isArray(paymentList) ? paymentList : [];
-
-  const totalPaid = payments
-    .filter((payment) => payment.status === "COMPLETED")
-    .reduce((acc, payment) => acc + (payment.amount || 0), 0);
-
-  const totalPending = payments
-    .filter((payment) => payment.status === "PENDING")
-    .reduce((acc, payment) => acc + (payment.amount || 0), 0);
-
-  const handlePay = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (amount <= 0) {
-      setMessage({
-        type: "error",
-        text: "Monto inválido para procesar el pago.",
-      });
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-      setMessage(null);
-
-      await executePayment({
-        amount: Number(amount),
-        concept,
-        paymentMethod: "DIGITAL_WALLET",
-      });
-
-      setMessage({
-        type: "success",
-        text: "Pago procesado exitosamente.",
-      });
-
-      refetch();
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Error al procesar el pago.";
-
-      setMessage({
-        type: "error",
-        text: errorMessage,
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+  const handlePayVocalia = () => {
+    setPaymentStatus("COMPLETED");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 transition-colors duration-300 md:p-8 dark:bg-[#1A1C20] dark:text-gray-100">
-      <div className="mx-auto mb-8 flex max-w-5xl flex-col items-start justify-between gap-4 border-b border-gray-200 pb-4 sm:flex-row sm:items-center dark:border-gray-700">
+    <div className="bg-background text-foreground min-h-screen p-4 transition-colors duration-300 md:p-8">
+      {/* Header */}
+      <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="mb-1 flex items-center gap-2">
-            <Wallet className="h-7 w-7 text-[#0B5FA5] dark:text-[#FF6B35]" />
-
-            <h1 className="text-3xl font-extrabold tracking-tight text-[#1D3557] dark:text-white">
-              Billetera & Cuotas
+            <CreditCard className="h-7 w-7 text-[#0B5FA5] dark:text-[#FF6B35]" />
+            <h1 className="text-2xl font-bold tracking-tight">
+              Fintech & Ticketing Digital
             </h1>
           </div>
-
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Gestión transparente de cuotas de arbitraje, vocalía y sanciones de
-            equipo.
+          <p className="text-muted-foreground text-sm">
+            Cobro transparente de vocalías ($5.00), multas y entradas con Deuna
+            / Tarjeta
           </p>
         </div>
+        <ThemeToggle />
       </div>
 
-      {message && (
-        <div
-          className={`mx-auto mb-6 max-w-5xl rounded-xl border p-4 text-sm font-medium ${
-            message.type === "error"
-              ? "border-[#E63946] bg-red-50 text-[#E63946] dark:bg-red-950/30"
-              : "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-
-      <div className="mx-auto mb-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="space-y-2 rounded-2xl bg-gradient-to-br from-[#1D3557] to-[#0B5FA5] p-6 text-white shadow-xl">
-          <span className="block text-xs font-bold uppercase tracking-wider text-gray-300">
-            Pagos Realizados
-          </span>
-
-          <div className="text-3xl font-black">${totalPaid.toFixed(2)}</div>
-
-          <div className="flex items-center gap-1 text-xs text-emerald-300">
-            <CheckCircle2 className="h-4 w-4" />
-            Al día con vocalía
-          </div>
-        </div>
-
-        <div className="space-y-2 rounded-2xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138]">
-          <span className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            Cuotas Pendientes
-          </span>
-
-          <div className="text-3xl font-black text-[#E63946]">
-            ${totalPending.toFixed(2)}
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
+        {/* Vocalía Pay Card (2 Cols) */}
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xl transition-all duration-300 md:col-span-2 dark:border-slate-700 dark:bg-[#2E3138]">
+          <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-700">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#FF6B35]">
+                Pago de Vocalía de Partido
+              </span>
+              <h2 className="text-lg font-bold text-[#1D3557] dark:text-white">
+                Fecha 5: El Batán vs San Roque
+              </h2>
+            </div>
+            <span className="text-2xl font-black text-[#1D3557] dark:text-[#FF6B35]">
+              $5.00 USD
+            </span>
           </div>
 
-          <div className="flex items-center gap-1 text-xs text-[#E63946]">
-            <Clock className="h-4 w-4" />
-            {totalPending > 0 ? "Pendiente de cancelación" : "Sin pendientes"}
+          <p className="text-muted-foreground mb-6 text-xs">
+            Elimina el uso de efectivo en los complejos deportivos. Paga tu
+            cuota de vocalía de forma directa y segura.
+          </p>
+
+          {/* Payment Method Selector */}
+          <div className="mb-6 space-y-3">
+            <span className="text-muted-foreground text-xs font-semibold uppercase">
+              Selecciona Método de Pago:
+            </span>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                onClick={() => setSelectedMethod("DEUNA")}
+                type="button"
+                className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-3 text-xs font-bold transition-all ${
+                  selectedMethod === "DEUNA"
+                    ? "border-[#0B5FA5] bg-[#0B5FA5]/10 text-[#0B5FA5] dark:border-[#FF6B35] dark:bg-[#FF6B35]/20 dark:text-[#FF6B35]"
+                    : "text-muted-foreground border-slate-200 dark:border-slate-700"
+                }`}
+              >
+                <span>📱 Botón Deuna</span>
+                <span className="text-[10px] font-normal">QR Inmediato</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedMethod("CARD")}
+                type="button"
+                className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-3 text-xs font-bold transition-all ${
+                  selectedMethod === "CARD"
+                    ? "border-[#0B5FA5] bg-[#0B5FA5]/10 text-[#0B5FA5] dark:border-[#FF6B35] dark:bg-[#FF6B35]/20 dark:text-[#FF6B35]"
+                    : "text-muted-foreground border-slate-200 dark:border-slate-700"
+                }`}
+              >
+                <span>💳 Tarjeta</span>
+                <span className="text-[10px] font-normal">Débito/Crédito</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedMethod("TRANSFER")}
+                type="button"
+                className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border p-3 text-xs font-bold transition-all ${
+                  selectedMethod === "TRANSFER"
+                    ? "border-[#0B5FA5] bg-[#0B5FA5]/10 text-[#0B5FA5] dark:border-[#FF6B35] dark:bg-[#FF6B35]/20 dark:text-[#FF6B35]"
+                    : "text-muted-foreground border-slate-200 dark:border-slate-700"
+                }`}
+              >
+                <span>🏦 Transferencia</span>
+                <span className="text-[10px] font-normal">Banca Web</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2 rounded-2xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138]">
-          <span className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            Usuario Sincronizado
-          </span>
-
-          <div className="truncate text-lg font-bold text-[#1D3557] dark:text-white">
-            {user?.username || user?.email || "Jugador"}
-          </div>
-
-          <div className="flex items-center gap-1 text-xs font-semibold text-[#FF6B35]">
-            <DollarSign className="h-4 w-4" />
-            Pagos Verificados por Pasarela
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-md lg:col-span-2 dark:border-gray-700 dark:bg-[#2E3138]">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-[#1D3557] dark:text-white">
-            <CreditCard className="h-5 w-5 text-[#0B5FA5] dark:text-[#FF6B35]" />
-            Historial de Transacciones
-          </h2>
-
-          {payments.length === 0 ? (
-            <div className="space-y-2 rounded-xl border border-dashed border-gray-300 py-10 text-center dark:border-gray-700">
-              <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
-
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                No hay movimientos ni registros de pago aún.
-              </p>
+          {/* Pay Button / Status */}
+          {paymentStatus === "COMPLETED" ? (
+            <div className="flex items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-50 p-4 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
+              <div className="flex items-center gap-2 text-xs font-bold">
+                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                <span>¡Vocalía de $5.00 Pagada Exitosamente!</span>
+              </div>
+              <span className="rounded bg-emerald-200 px-2 py-0.5 font-mono text-[10px] uppercase dark:bg-emerald-900">
+                Comprobante #9041
+              </span>
             </div>
           ) : (
-            <div className="space-y-3">
-              {payments.map((payment) => (
-                <div
-                  key={payment.id}
-                  className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50"
-                >
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      {payment.concept || "Pago de Arbitraje/Vocalía"}
-                    </p>
-
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      📅 {new Date(payment.createdAt).toLocaleDateString()} —{" "}
-                      {new Date(payment.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1 text-right">
-                    <span className="block text-base font-extrabold text-[#1D3557] dark:text-white">
-                      ${payment.amount.toFixed(2)}
-                    </span>
-
-                    <span
-                      className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase ${
-                        payment.status === "COMPLETED"
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300"
-                          : "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300"
-                      }`}
-                    >
-                      {payment.status === "COMPLETED"
-                        ? "COMPLETADO"
-                        : "PENDIENTE"}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <button
+              onClick={handlePayVocalia}
+              className="w-full cursor-pointer rounded-xl bg-[#1D3557] px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-[#1D3557]/90 dark:bg-[#0B5FA5] dark:hover:bg-[#0B5FA5]/80"
+            >
+              Pagar Vocalía de $5.00 USD con {selectedMethod}
+            </button>
           )}
         </div>
 
-        <div className="h-fit space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#2E3138]">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-[#1D3557] dark:text-white">
-            <ArrowUpRight className="h-5 w-5 text-[#FF6B35]" />
-            Abonar Cuota
-          </h2>
-
-          <form onSubmit={handlePay} className="space-y-4">
-            <div>
-              <label className="mb-2 block text-xs font-bold uppercase text-gray-700 dark:text-gray-300">
-                Concepto / Detalle
-              </label>
-
-              <input
-                type="text"
-                value={concept}
-                onChange={(e) => setConcept(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B5FA5] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                required
-              />
+        {/* Ticket Store Box (1 Col) */}
+        <div className="flex flex-col justify-between rounded-xl border bg-gradient-to-br from-[#1D3557] to-slate-900 p-6 text-white shadow-xl dark:border-slate-700 dark:from-[#2E3138] dark:to-[#0B5FA5]/40">
+          <div>
+            <div className="mb-3 flex items-center gap-2">
+              <Ticket className="h-6 w-6 text-[#F4A261] dark:text-[#FF6B35]" />
+              <h3 className="text-base font-bold">Entradas Digitales</h3>
             </div>
-
-            <div>
-              <label className="mb-2 block text-xs font-bold uppercase text-gray-700 dark:text-gray-300">
-                Monto ($ USD)
-              </label>
-
-              <input
-                type="number"
-                min={1}
-                step={0.5}
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B5FA5] dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-                required
-              />
+            <p className="mb-4 text-xs leading-relaxed text-slate-200">
+              Reserva y compra entradas con QR para familiares e hinchada en
+              partidos definitorios o finales de liga.
+            </p>
+            <div className="mb-4 rounded-lg border border-white/10 bg-white/10 p-3 backdrop-blur-sm">
+              <span className="block text-[10px] font-bold uppercase text-[#F4A261]">
+                Próximo Gran Partido
+              </span>
+              <span className="text-sm font-bold">
+                Gran Final Interligas Quito 2026
+              </span>
+              <span className="mt-1 block text-xs font-semibold text-slate-300">
+                Precio: $3.00 USD por entrada
+              </span>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={isProcessing}
-              className="w-full rounded-xl bg-[#FF6B35] py-3 text-sm font-bold text-white shadow transition-all hover:opacity-90 disabled:opacity-50"
-            >
-              {isProcessing ? "Procesando Pago..." : "Pagar Cuota Ahora"}
-            </button>
-          </form>
+          <button
+            onClick={() => setShowTicketModal(true)}
+            className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-[#F4A261] px-3 py-2.5 text-xs font-bold text-slate-900 transition-all hover:bg-[#F4A261]/90"
+          >
+            <QrCode className="h-4 w-4" />
+            <span>Comprar Ticket Digital ($3.00)</span>
+          </button>
+        </div>
+
+        {/* Transaction History (3 Cols) */}
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-lg md:col-span-3 dark:border-slate-700 dark:bg-[#2E3138]">
+          <div className="mb-4 flex items-center gap-2">
+            <History className="h-5 w-5 text-[#0B5FA5] dark:text-[#FF6B35]" />
+            <h3 className="text-base font-bold">
+              Historial Transaccional Transparente
+            </h3>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left text-xs">
+              <thead>
+                <tr className="text-muted-foreground border-b border-slate-200 font-semibold dark:border-slate-700">
+                  <th className="px-3 py-2.5">ID Transacción</th>
+                  <th className="px-3 py-2.5">Fecha</th>
+                  <th className="px-3 py-2.5">Concepto</th>
+                  <th className="px-3 py-2.5">Método</th>
+                  <th className="px-3 py-2.5">Monto</th>
+                  <th className="px-3 py-2.5">Estado</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium dark:divide-slate-700/60">
+                {transactions.map((tx) => (
+                  <tr
+                    key={tx.id}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  >
+                    <td className="px-3 py-3 font-mono font-bold text-[#1D3557] dark:text-[#FF6B35]">
+                      {tx.id}
+                    </td>
+                    <td className="text-muted-foreground px-3 py-3">
+                      {tx.date}
+                    </td>
+                    <td className="px-3 py-3 font-semibold">{tx.concept}</td>
+                    <td className="px-3 py-3">{tx.method}</td>
+                    <td className="px-3 py-3 font-bold">
+                      ${tx.amount.toFixed(2)}
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        {tx.status} ✓
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      {/* Ticket Modal */}
+      {showTicketModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 text-center shadow-2xl dark:border-slate-700 dark:bg-[#2E3138]">
+            <Ticket className="mx-auto mb-2 h-10 w-10 text-[#FF6B35]" />
+            <h3 className="mb-1 text-lg font-bold">Ticket Digital Emitido</h3>
+            <p className="text-muted-foreground mb-4 text-xs">
+              Muestra este código QR en la puerta del estadio
+            </p>
+            <div className="my-3 rounded-xl border bg-white p-4">
+              <svg
+                className="mx-auto h-32 w-32 text-slate-900"
+                viewBox="0 0 100 100"
+                fill="currentColor"
+              >
+                <rect
+                  x="15"
+                  y="15"
+                  width="70"
+                  height="70"
+                  fill="currentColor"
+                />
+                <rect x="25" y="25" width="50" height="50" fill="white" />
+                <rect
+                  x="35"
+                  y="35"
+                  width="30"
+                  height="30"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <span className="my-2 block font-mono text-xs font-bold text-[#0B5FA5] dark:text-[#FF6B35]">
+              TICKET-QR-FINAL-2026
+            </span>
+            <button
+              onClick={() => setShowTicketModal(false)}
+              className="mt-3 w-full cursor-pointer rounded-lg bg-slate-200 py-2 text-xs font-bold dark:bg-slate-700"
+            >
+              Cerrar Ticket
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

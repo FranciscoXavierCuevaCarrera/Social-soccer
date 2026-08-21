@@ -42,7 +42,7 @@ export default defineConfig({
     command: "run-wasp-app dev --path-to-app=../app --wasp-cli-cmd=wasp",
     // Wait for the backend to start
     url: "http://localhost:3001",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
   },
 });
