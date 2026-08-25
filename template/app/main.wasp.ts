@@ -18,21 +18,26 @@ import { socialsoccerSpec } from "./src/socialsoccer/socialsoccer.wasp";
 import { userSpec } from "./src/user/user.wasp";
 
 export default app({
-  name: "OpenSaaS",
+  name: "SocialSoccer",
   wasp: { version: "^0.25.0" },
-  title: "My Open SaaS App",
+  title: "Social Soccer",
   head,
   auth: authConfig,
+
   db: {
     seeds: [seedMockUsers],
   },
+
   client: {
     rootComponent: App,
   },
+
   server: {
     envValidationSchema: serverEnvValidationSchema,
   },
+
   emailSender,
+
   spec: [
     route("LandingPageRoute", "/", page(LandingPage), { prerender: true }),
     route("NotFoundRoute", "*", page(NotFoundPage)),

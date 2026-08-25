@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import { useAuth } from "wasp/client/auth";
 import {
+  cancelMatch,
   getMatch,
   joinMatch,
   leaveMatch,
@@ -22,6 +23,7 @@ export const MatchDetailPage = () => {
 
   const joinAction = useAction(joinMatch);
   const leaveAction = useAction(leaveMatch);
+  const cancelAction = useAction(cancelMatch);
 
   const {
     data: match,
@@ -72,10 +74,12 @@ export const MatchDetailPage = () => {
     );
   }
 
+  const isCancelled = match.status === "CANCELLED";
   const isUserJoined =
     match.players?.some((player) => player.userId === user?.id) ?? false;
-
   const isFull = (match.players?.length || 0) >= match.maxPlayers;
+  const isCreator = match.createdById === user?.id;
+  const canCancel = !isCancelled && (isCreator || Boolean(user?.isAdmin));
 
   const handleJoin = async () => {
     try {
@@ -89,7 +93,7 @@ export const MatchDetailPage = () => {
         text: "¡Te has inscrito al partido exitosamente!",
       });
 
-      refetch();
+      await refetch();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Error al unirse al partido";
@@ -115,10 +119,44 @@ export const MatchDetailPage = () => {
         text: "Has salido del partido",
       });
 
-      refetch();
+      await refetch();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Error al salir del partido";
+
+      setMessage({
+        type: "error",
+        text: errorMessage,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas cancelar este partido? Esta acción cambiará su estado a CANCELADO.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setMessage(null);
+
+      await cancelAction({ matchId: match.id });
+
+      setMessage({
+        type: "success",
+        text: "El partido ha sido cancelado correctamente.",
+      });
+
+      await refetch();
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Error al cancelar el partido";
 
       setMessage({
         type: "error",
@@ -150,16 +188,31 @@ export const MatchDetailPage = () => {
         </div>
       )}
 
+      {isCancelled && (
+        <div className="rounded-xl border border-[#E63946] bg-red-50 p-4 text-sm font-semibold text-[#E63946] dark:bg-red-950/30 dark:text-red-300">
+          Este partido ha sido cancelado. Ya no está disponible para nuevas
+          inscripciones.
+        </div>
+      )}
+
       <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md sm:p-8 dark:border-gray-700 dark:bg-[#2E3138]">
         <div className="flex flex-col justify-between gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-center dark:border-gray-700">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <span
                 className={`rounded-full px-3 py-1 text-xs font-bold text-white ${
-                  isFull ? "bg-[#E63946]" : "bg-[#FF6B35]"
+                  isCancelled
+                    ? "bg-[#E63946]"
+                    : isFull
+                      ? "bg-[#E63946]"
+                      : "bg-[#FF6B35]"
                 }`}
               >
-                {isFull ? "COMPLETO" : "CUPO DISPONIBLE"}
+                {isCancelled
+                  ? "CANCELADO"
+                  : isFull
+                    ? "COMPLETO"
+                    : "CUPO DISPONIBLE"}
               </span>
             </div>
 
@@ -204,33 +257,45 @@ export const MatchDetailPage = () => {
           </div>
         </div>
 
-        <div className="pt-2">
-          {isUserJoined ? (
-            <button
-              onClick={handleLeave}
-              disabled={isProcessing}
-              className="w-full rounded-xl bg-[#E63946] px-6 py-3 font-bold text-white shadow transition-all hover:bg-red-700 disabled:opacity-50"
-            >
-              {isProcessing ? "Procesando..." : "Salirse del Partido"}
-            </button>
-          ) : (
-            <button
-              onClick={handleJoin}
-              disabled={isProcessing || isFull}
-              className={`w-full rounded-xl px-6 py-3 font-bold text-white shadow transition-all ${
-                isFull
-                  ? "cursor-not-allowed bg-gray-400 dark:bg-gray-700"
-                  : "bg-[#1D3557] hover:opacity-90 dark:bg-[#0B5FA5]"
-              }`}
-            >
-              {isFull
-                ? "Partido Lleno"
-                : isProcessing
-                  ? "Procesando..."
-                  : "Inscribirme al Partido"}
-            </button>
-          )}
-        </div>
+        {!isCancelled && (
+          <div className="space-y-3 pt-2">
+            {isUserJoined ? (
+              <button
+                onClick={handleLeave}
+                disabled={isProcessing}
+                className="w-full rounded-xl bg-[#E63946] px-6 py-3 font-bold text-white shadow transition-all hover:bg-red-700 disabled:opacity-50"
+              >
+                {isProcessing ? "Procesando..." : "Salirse del Partido"}
+              </button>
+            ) : (
+              <button
+                onClick={handleJoin}
+                disabled={isProcessing || isFull}
+                className={`w-full rounded-xl px-6 py-3 font-bold text-white shadow transition-all ${
+                  isFull
+                    ? "cursor-not-allowed bg-gray-400 dark:bg-gray-700"
+                    : "bg-[#1D3557] hover:opacity-90 dark:bg-[#0B5FA5]"
+                }`}
+              >
+                {isFull
+                  ? "Partido Lleno"
+                  : isProcessing
+                    ? "Procesando..."
+                    : "Inscribirme al Partido"}
+              </button>
+            )}
+
+            {canCancel && (
+              <button
+                onClick={handleCancel}
+                disabled={isProcessing}
+                className="w-full rounded-xl border-2 border-[#E63946] px-6 py-3 font-bold text-[#E63946] shadow-sm transition-all hover:bg-[#E63946] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isProcessing ? "Cancelando Partido..." : "Cancelar Partido"}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md sm:p-8 dark:border-gray-700 dark:bg-[#2E3138]">

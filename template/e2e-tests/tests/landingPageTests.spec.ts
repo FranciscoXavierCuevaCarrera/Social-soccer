@@ -5,23 +5,43 @@ test.describe("Social Soccer landing page tests", () => {
     await page.goto("/");
   });
 
-  test("has title", async ({ page }) => {
-    await expect(page).toHaveTitle(/SaaS|Social/);
+  test("has Social Soccer title", async ({ page }) => {
+    await expect(page).toHaveTitle(/Social Soccer/i);
   });
 
-  test("get started link", async ({ page }) => {
-    await page.getByRole("link", { name: "Get Started" }).click();
+  test("allows user to register", async ({ page }) => {
+    await page.getByRole("link", { name: "Registrarme" }).click();
+
     await page.waitForURL("**/signup");
+
+    await expect(page).toHaveURL(/\/signup$/);
   });
 
-  test("ver partidos link", async ({ page }) => {
-    await page.getByRole("link", { name: "Ver Partidos" }).click();
-    await page.waitForURL("**/matches");
+  test("allows user to start from hero", async ({ page }) => {
+    await page.getByRole("link", { name: /Comenzar ahora/i }).click();
+
+    await page.waitForURL("**/signup");
+
+    await expect(page).toHaveURL(/\/signup$/);
   });
 
-  test("headings and navigation", async ({ page }) => {
+  test("shows Social Soccer navigation sections", async ({ page }) => {
+    const navigation = page.getByRole("navigation");
+
     await expect(
-      page.getByRole("heading", { name: "Frequently asked questions" }),
+      navigation.getByRole("link", { name: "Soluciones" }),
+    ).toBeVisible();
+
+    await expect(
+      navigation.getByRole("link", { name: "Cómo funciona" }),
+    ).toBeVisible();
+
+    await expect(
+      navigation.getByRole("link", { name: "Plataforma" }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: "El fútbol barrial, conectado." }),
     ).toBeVisible();
   });
 });

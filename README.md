@@ -1,128 +1,530 @@
-## Welcome to your new SaaS App! 🎉
+# ⚽ Social Soccer
 
-<div style="display: flex; gap: 16px; align-items: center;">
-  <a href="https://www.producthunt.com/products/open-saas?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_source=badge-open&#0045;saas&#0045;2&#0045;0" target="_blank">
-    <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=1023519&theme=neutral&period=weekly&topic_id=237&t=1760520428563" alt="Open&#0032;SaaS&#0032;2&#0046;0 - Free&#0044;&#0032;open&#0045;source&#0032;SaaS&#0032;starter&#0032;kit&#0032;with&#0032;superpowers | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
-  </a>
-  <a href="https://www.producthunt.com/products/open-saas?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_source=badge-open&#0045;saas&#0045;2&#0045;0" target="_blank">
-    <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=1023519&theme=neutral&period=daily&t=1760520428563" alt="Open&#0032;SaaS&#0032;2&#0046;0 - Free&#0044;&#0032;open&#0045;source&#0032;SaaS&#0032;starter&#0032;kit&#0032;with&#0032;superpowers | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
-  </a>
-</div>
+**Social Soccer** es una plataforma web para la gestión y organización del fútbol amateur, barrial y parroquial.
 
-https://github.com/user-attachments/assets/3856276b-23e9-455e-a564-b5f26f4f0e98
+El proyecto busca centralizar en una sola aplicación la información que normalmente se encuentra dispersa entre grupos de mensajería, registros físicos y procesos manuales: jugadores, partidos, canchas, árbitros, estadísticas y operaciones relacionadas con pagos y tickets.
 
-You've decided to build a SaaS app with the Open SaaS template. Great choice!
+Actualmente Social Soccer se encuentra en una **fase de MVP / beta cerrada**, orientada a validar la experiencia con un grupo reducido de usuarios antes de continuar con la evolución del producto y su presentación empresarial.
 
-This template is:
+---
 
-1. fully open-source
-2. completely free to use and distribute
-3. comes with a ton of features out of the box!
-4. ready to work with your favorite AI coding tool or agent (Claude Code, Cursor, Codex, OpenCode, etc.)
+## 🚀 Funcionalidades actuales
 
-🧑‍💻 Check it out in action here: [OpenSaaS.sh](https://opensaas.sh)
-📚 Check out the Docs here: [Open SaaS Docs](https://docs.opensaas.sh)
+### 🔐 Autenticación
 
-## What's inside?
+- Registro de usuarios.
+- Inicio de sesión.
+- Recuperación de contraseña.
+- Verificación de correo.
+- Dashboard autenticado.
+- Control básico de usuarios administradores.
 
-The template itself is built on top of some very powerful tools and frameworks, including:
+Durante la beta local puede utilizarse:
 
-- 🐝 [Wasp](https://wasp.sh) - a full-stack React, NodeJS, Prisma framework with superpowers
-- 🚀 [Astro](https://starlight.astro.build/) - Astro's lightweight "Starlight" template for documentation and blog
-- 💸 [Stripe](https://stripe.com), [Polar.sh](https://polar.sh), or [Lemon Squeezy](https://lemonsqueezy.com/) - for products and payments
-- 💅 [ShadCN UI](https://tailwindcss.com) - for components & styling (plus admin dashboard!)
-- 🤖 [AI-Ready](https://docs.opensaas.sh/) - Custom Plugins, Skills, & Rules for AI-assisted coding with Claude Code, Cursor, or your favorite AI-assisted coding tool
-- 📈 [Plausible](https://plausible.io) or [Google](https://analytics.google.com/) Analytics
-- 🤖 [OpenAI](https://openai.com) - OpenAI API w/ function calling example
-- 📦 [AWS S3](https://aws.amazon.com/s3/) - for file uploads
-- 📧 [SendGrid](https://sendgrid.com), [MailGun](https://mailgun.com), or SMTP - for email sending
-- 🧪 [Playwright](https://playwright.dev) - end-to-end tests with Playwright
+```env
+SKIP_EMAIL_VERIFICATION_IN_DEV=true
+```
 
-Because we're using Wasp as the full-stack framework, we can leverage a lot of its features to build our SaaS in record time, including:
+Esta variable es exclusivamente para desarrollo y no debe utilizarse en producción.
 
-- 🔐 [Full-stack Authentication](https://wasp.sh/docs/auth/overview) - Email verified + social Auth in a few lines of code.
-- ⛑ [End-to-end Type Safety](https://wasp.sh/docs/data-model/operations/overview) - Type your backend functions and get inferred types on the front-end automatically, without the need to install or configure any third-party libraries. Oh, and type-safe Links, too!
-- 🤖 [Jobs](https://wasp.sh/docs/advanced/jobs) - Run cron jobs in the background or set up queues simply by defining a function in the config file.
-- 🚀 [One-command Deploy](https://wasp.sh/docs/advanced/deployment/overview) - Easily deploy your DB, Server, & Client with one commaned to [Railway](https://railway.app) or [Fly.io](https://fly.io) via the CLI. Or deploy manually to any other hosting serivce of your choice.
+### 🏠 Dashboard
 
-You also get access to Wasp's diverse, helpful community if you get stuck or need help.
+Después de iniciar sesión, el usuario accede a:
 
-- 🤝 [Wasp Discord](https://discord.gg/aCamt5wCpS)
+```text
+/app
+```
 
-## Getting Started
+Desde allí puede acceder a:
 
-### Simple Instructions
+- ⚽ Partidos.
+- ➕ Organizar Partido.
+- 👤 Mi Perfil.
+- 📊 Estadísticas.
+- 💳 Finanzas.
 
-First, to install the latest version of [Wasp](https://wasp.sh/) on macOS, Linux, or Windows with WSL, run the following command:
+### ⚽ Gestión de partidos
+
+Actualmente permite:
+
+- Crear partidos.
+- Consultar próximos partidos.
+- Consultar fecha y hora.
+- Consultar cancha.
+- Consultar árbitro.
+- Definir límite de jugadores.
+- Inscribirse.
+- Salirse del partido.
+- Consultar jugadores inscritos.
+- Cancelar partidos.
+
+La cancelación utiliza un cambio de estado:
+
+```text
+SCHEDULED → CANCELLED
+```
+
+Los partidos cancelados no se eliminan físicamente de la base de datos.
+
+La cancelación está protegida en el backend y solo puede realizarla el creador del partido o un administrador.
+
+### 🟨 Árbitros
+
+- Consulta de árbitros.
+- Calificación promedio.
+- Asignación a partidos.
+- Evaluación posterior al encuentro.
+- Comentarios sobre el desempeño.
+
+### 📊 Estadísticas
+
+El MVP contempla:
+
+- Goles.
+- Asistencias.
+- Tarjetas amarillas.
+- Tarjetas rojas.
+- Fair Play.
+- Partidos jugados.
+
+### 💳 Finanzas y Ticketing
+
+El proyecto incluye un módulo inicial para:
+
+- Historial de pagos.
+- Vocalías.
+- Inscripciones.
+- Multas.
+- Tickets digitales.
+
+Parte de estas funciones se encuentra actualmente en modo demostrativo y las integraciones financieras reales forman parte de una fase posterior.
+
+---
+
+# 🧱 Arquitectura
+
+Social Soccer utiliza actualmente:
+
+| Tecnología       | Uso                  |
+| ---------------- | -------------------- |
+| **Wasp 0.25**    | Framework full-stack |
+| **React**        | Interfaz             |
+| **TypeScript**   | Lenguaje             |
+| **Node.js**      | Backend              |
+| **Prisma**       | ORM                  |
+| **PostgreSQL**   | Base de datos        |
+| **Tailwind CSS** | Estilos              |
+| **Playwright**   | Pruebas E2E          |
+
+La arquitectura general es:
+
+```text
+Usuario
+   ↓
+React / Wasp Client
+   ↓
+Wasp Router + Operations
+   ↓
+Node.js / Wasp Server
+   ↓
+Prisma
+   ↓
+PostgreSQL
+```
+
+---
+
+# 📁 Estructura principal
+
+```text
+Social-soccer/
+├── template/
+│   └── app/
+│       ├── src/
+│       │   ├── admin/
+│       │   ├── app/
+│       │   ├── auth/
+│       │   ├── client/
+│       │   ├── identity/
+│       │   ├── matches/
+│       │   ├── payments/
+│       │   ├── socialsoccer/
+│       │   ├── stats/
+│       │   └── user/
+│       ├── schema.prisma
+│       ├── main.wasp.ts
+│       └── package.json
+├── specs/
+├── e2e-tests/
+├── spec.md
+├── plan.md
+└── tasks.md
+```
+
+---
+
+# ⚽ Módulo de partidos
+
+El módulo principal se encuentra en:
+
+```text
+template/app/src/matches/
+```
+
+Sus componentes principales son:
+
+```text
+MatchListPage.tsx
+CreateMatchPage.tsx
+MatchDetailPage.tsx
+MatchesPage.tsx
+matches.wasp.ts
+operations.ts
+```
+
+`MatchListPage.tsx` es actualmente la interfaz principal de consulta de partidos.
+
+`MatchesPage.tsx` funciona como compatibilidad con código anterior y reutiliza `MatchListPage`.
+
+---
+
+# 🗄️ Base de datos
+
+Social Soccer utiliza PostgreSQL mediante Prisma.
+
+Entre las entidades principales se encuentran:
+
+```text
+User
+PlayerProfile
+Match
+MatchPlayer
+Field
+Referee
+PlayerStats
+RefereeRating
+Payment
+Ticket
+```
+
+`Match` mantiene relaciones con:
+
+- usuario creador;
+- jugadores;
+- cancha;
+- árbitro;
+- pagos;
+- tickets;
+- estadísticas;
+- evaluaciones arbitrales.
+
+---
+
+# 🛠️ Desarrollo local
+
+## Requisitos
+
+Necesitas tener instalado:
+
+- Node.js.
+- npm.
+- Wasp CLI.
+- PostgreSQL local o utilizar la base gestionada por Wasp.
+
+## Instalar Wasp
 
 ```bash
 npm i -g @wasp.sh/wasp-cli
 ```
 
-Then, create a new SaaS app with the following command:
+## Entrar al proyecto
 
 ```bash
-wasp new -t saas
+cd template/app
 ```
 
-This will create a **clean copy of the Open SaaS template** into a new directory, and you can start building your SaaS app right away!
+## Variables de entorno
 
-### Detailed Instructions
+El proyecto utiliza:
 
-For everything you need to know about getting started and using this template, check out the [Open SaaS Docs](https://docs.opensaas.sh).
+```text
+.env.client
+.env.server
+```
 
-We've documented everything in great detail, including installation instructions, pulling updates to the template, guides for integrating services, SEO, deployment, and more. 🚀
+Estos archivos contienen configuración local y secretos y **no deben subirse a GitHub**.
 
-## Getting Help & Providing Feedback
+El proyecto ya verifica que los archivos `.env.*` estén excluidos del control de versiones.
 
-There are two ways to get help or provide feedback (and we try to always respond quickly!):
+## Base de datos
 
-1. [Open an issue](https://github.com/wasp-lang/open-saas/issues)
-2. [Wasp Discord](https://discord.gg/aCamt5wCpS) -- please direct questions to the #🙋questions forum channel
-
-## Development Tools
-
-### Code Quality Tools
-
-This repository includes comprehensive code quality tooling to help maintain code standards:
-
-#### Prettier (Code Formatting)
-
-Prettier is configured for automatic code formatting across all JavaScript, TypeScript, and other supported files.
+En una terminal:
 
 ```bash
-# Check if files are formatted correctly
-npm run prettier:check
+wasp start db
+```
 
-# Automatically format all files
+En otra:
+
+```bash
+wasp db migrate-dev
+```
+
+Después:
+
+```bash
+wasp start
+```
+
+La aplicación normalmente queda disponible en:
+
+```text
+http://localhost:3000
+```
+
+El servidor de desarrollo utiliza:
+
+```text
+http://localhost:3001
+```
+
+---
+
+# 🧪 Pruebas
+
+Social Soccer utiliza Playwright para pruebas end-to-end.
+
+El flujo principal que debe validarse es:
+
+```text
+Landing
+   ↓
+Registro / Login
+   ↓
+/app
+   ↓
+Partidos
+   ↓
+Detalle
+   ↓
+Inscripción / salida
+   ↓
+Cancelación
+   ↓
+Evaluación arbitral
+```
+
+La suite E2E se encuentra en:
+
+```text
+e2e-tests/
+```
+
+La actualización final de las pruebas forma parte de la fase de preparación pre-producción.
+
+---
+
+# 🧹 Calidad de código
+
+El proyecto utiliza Prettier y ESLint.
+
+### Prettier
+
+Comprobar formato:
+
+```bash
+npm run prettier:check
+```
+
+Formatear:
+
+```bash
 npm run prettier:format
 ```
 
-#### ESLint (Code Linting)
+### ESLint
 
-ESLint is configured with TypeScript and React support to catch potential bugs and enforce code quality standards.
+Comprobar problemas:
 
 ```bash
-# Run ESLint to check for issues
 npm run lint
+```
 
-# Automatically fix fixable issues
+Corregir problemas solucionables automáticamente:
+
+```bash
 npm run lint:fix
 ```
 
-The ESLint configuration includes:
+---
 
-- TypeScript support with `@typescript-eslint`
-- React and React Hooks linting
-- Sensible defaults tuned for a SaaS application
-- Automatic support for CommonJS (.cjs), ES Modules (.mjs), and TypeScript files
+# 🔒 Seguridad
 
-Both Prettier and ESLint checks are automatically run in CI/CD pipelines to ensure code quality.
+Los secretos nunca deben almacenarse en GitHub.
 
-For information about other development tools used to maintain derived projects (like opensaas.sh and template-test), see [tools/README.md](./tools/README.md).
+Entre las variables sensibles se encuentran, según los servicios utilizados:
 
-## Contributing
+```text
+DATABASE_URL
+RESEND_API_KEY
+STRIPE_API_KEY
+STRIPE_WEBHOOK_SECRET
+LEMONSQUEEZY_API_KEY
+LEMONSQUEEZY_WEBHOOK_SECRET
+OPENAI_API_KEY
+```
 
-Note that we've tried to get as many of the core features of a SaaS app into this template as possible, but there still might be some missing features or functionality.
+No todas son necesarias para ejecutar la beta actual.
 
-We could always use some help tying up loose ends: contributions are welcome! Check out [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
+Antes de producción se configurará únicamente el conjunto requerido por los servicios habilitados.
+
+---
+
+# 📧 Correo electrónico
+
+Durante la beta local se utiliza el proveedor de correo de desarrollo de Wasp y el flujo de verificación puede omitirse mediante:
+
+```env
+SKIP_EMAIL_VERIFICATION_IN_DEV=true
+```
+
+Para producción pública será necesario:
+
+1. utilizar un proveedor de correo real;
+2. configurar las variables correspondientes;
+3. activar nuevamente la verificación de correo;
+4. utilizar un remitente autorizado;
+5. configurar las URLs públicas de la aplicación.
+
+---
+
+# 🧪 Estado del MVP
+
+### ✅ Implementado
+
+- Autenticación.
+- Dashboard.
+- Perfil deportivo.
+- Gestión de partidos.
+- Creación de partidos.
+- Inscripción.
+- Salida de partidos.
+- Cancelación.
+- Árbitros.
+- Evaluación arbitral.
+- Estadísticas básicas.
+- Finanzas y ticketing a nivel MVP.
+- PostgreSQL + Prisma.
+- Control básico de administración.
+- Identidad visual propia de Social Soccer.
+
+### 🟡 Parcial / demostrativo
+
+- Fintech real.
+- Ticketing empresarial.
+- DataWallet interoperable.
+- Gamificación avanzada.
+- Fair Play avanzado.
+
+### 🔴 Pendiente
+
+- Notificaciones push reales.
+- Integración meteorológica automática.
+- Pasarela financiera de producción.
+- Correo de producción.
+- Dominio propio.
+- E2E completamente actualizado.
+- Despliegue definitivo.
+- Monitorización y endurecimiento final de producción.
+
+---
+
+# 👥 Beta cerrada
+
+La siguiente etapa del proyecto consiste en una beta con un grupo reducido de usuarios.
+
+El objetivo es recoger información sobre:
+
+- facilidad de registro;
+- navegación;
+- creación de partidos;
+- inscripción;
+- cancelación;
+- perfiles;
+- estadísticas;
+- evaluación arbitral;
+- experiencia financiera;
+- rendimiento;
+- problemas de usabilidad;
+- funcionamiento en dispositivos móviles.
+
+Los resultados de esta beta determinarán las prioridades de la siguiente versión.
+
+---
+
+# 🚂 Producción
+
+El despliegue previsto utiliza **Railway**.
+
+La arquitectura inicial será:
+
+```text
+                  Internet
+                     │
+                     ▼
+                  Railway
+              ┌──────┴──────┐
+              │             │
+        Social Soccer   PostgreSQL
+        Wasp + React      Prisma
+```
+
+Railway permitirá ejecutar el frontend y backend de la aplicación junto con PostgreSQL.
+
+GitHub se utilizará como repositorio de código; no como servidor de la aplicación.
+
+Antes del despliegue deberán completarse la auditoría de seguridad, pruebas E2E, configuración de correo y variables de entorno de producción.
+
+---
+
+# 📚 Documentación del proyecto
+
+Los documentos principales son:
+
+```text
+spec.md
+plan.md
+tasks.md
+```
+
+Además existe documentación específica del MVP dentro de:
+
+```text
+template/app/specs/001-social-soccer-mvp/
+```
+
+La documentación debe mantenerse alineada con la implementación real del proyecto y distinguir entre funcionalidades implementadas, demostrativas y futuras.
+
+---
+
+# 🎯 Próximo objetivo
+
+El objetivo inmediato es completar:
+
+```text
+Beta cerrada
+      ↓
+Feedback de usuarios
+      ↓
+Correcciones
+      ↓
+Auditoría técnica
+      ↓
+Pruebas E2E
+      ↓
+Railway
+      ↓
+Presentación empresarial
+```
+
+**Social Soccer — Tu fútbol, conectado.**

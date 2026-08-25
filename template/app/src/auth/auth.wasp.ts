@@ -6,6 +6,7 @@ import {
   type Spec,
 } from "@wasp.sh/spec";
 
+import { AppPage } from "../app/AppPage" with { type: "ref" };
 import { LoginPage } from "./LoginPage" with { type: "ref" };
 import { SignupPage } from "./SignupPage" with { type: "ref" };
 import { EmailVerificationPage } from "./email-and-pass/EmailVerificationPage" with { type: "ref" };
@@ -27,8 +28,8 @@ import {
 
 const emailAuthMethod: NonNullable<AuthMethods["email"]> = {
   fromField: {
-    name: "Open SaaS App",
-    email: "me@example.com",
+    name: "Social Soccer",
+    email: "no-reply@social-soccer.test",
   },
   emailVerification: {
     clientRoute: "EmailVerificationRoute",
@@ -80,10 +81,11 @@ export const authConfig: Auth = {
     // discord: discordAuthMethod,
   },
   onAuthFailedRedirectTo: "/login",
-  onAuthSucceededRedirectTo: "/matches",
+  onAuthSucceededRedirectTo: "/app",
 };
 
 export const authSpec: Spec = [
+  route("AppRoute", "/app", page(AppPage, { authRequired: true })),
   route("LoginRoute", "/login", page(LoginPage)),
   route("SignupRoute", "/signup", page(SignupPage)),
   route(

@@ -5,10 +5,10 @@ import { MatchDetailPage } from "./MatchDetailPage" with { type: "ref" };
 import { MatchListPage } from "./MatchListPage" with { type: "ref" };
 
 import {
+  cancelMatch,
   createMatch,
   getMatch,
   getMatches,
-  getReferees,
   joinMatch,
   leaveMatch,
 } from "./operations" with { type: "ref" };
@@ -32,10 +32,6 @@ export const matchesSpec = [
     page(MatchDetailPage, { authRequired: true }),
   ),
 
-  query(getReferees, {
-    entities: ["Referee"],
-  }),
-
   query(getMatches, {
     entities: ["Match", "MatchPlayer"],
   }),
@@ -54,5 +50,9 @@ export const matchesSpec = [
 
   action(leaveMatch, {
     entities: ["Match", "MatchPlayer"],
+  }),
+
+  action(cancelMatch, {
+    entities: ["Match"],
   }),
 ];
