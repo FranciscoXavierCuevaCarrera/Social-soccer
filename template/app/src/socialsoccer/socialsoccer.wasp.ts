@@ -2,7 +2,6 @@ import { action, page, query, route, type Spec } from "@wasp.sh/spec";
 
 import { AppPage } from "../app/AppPage" with { type: "ref" };
 import { IdentityPage } from "../identity/IdentityPage" with { type: "ref" };
-import { MatchesPage } from "../matches/MatchesPage" with { type: "ref" };
 import { PaymentsPage } from "../payments/PaymentsPage" with { type: "ref" };
 import { StatsPage } from "../stats/StatsPage" with { type: "ref" };
 
@@ -16,7 +15,6 @@ import {
 } from "./queries" with { type: "ref" };
 
 import {
-  createMatch,
   processPayment,
   submitRefereeRating,
   updateMatchStats,
@@ -31,12 +29,13 @@ export const socialsoccerSpec: Spec = [
     "/identity",
     page(IdentityPage, { authRequired: true }),
   ),
-  route("MatchesRoute", "/matches", page(MatchesPage, { authRequired: true })),
+
   route(
     "PaymentsRoute",
     "/payments",
     page(PaymentsPage, { authRequired: true }),
   ),
+
   route("StatsRoute", "/stats", page(StatsPage, { authRequired: true })),
 
   // Queries
@@ -52,6 +51,7 @@ export const socialsoccerSpec: Spec = [
       "Ticket",
     ],
   }),
+
   query(getUpcomingMatches, {
     entities: [
       "User",
@@ -64,6 +64,7 @@ export const socialsoccerSpec: Spec = [
       "Ticket",
     ],
   }),
+
   query(getPaymentHistory, {
     entities: [
       "User",
@@ -76,6 +77,7 @@ export const socialsoccerSpec: Spec = [
       "Ticket",
     ],
   }),
+
   query(getPlayerStats, {
     entities: [
       "User",
@@ -88,6 +90,7 @@ export const socialsoccerSpec: Spec = [
       "Ticket",
     ],
   }),
+
   query(getReferees, {
     entities: [
       "User",
@@ -100,6 +103,7 @@ export const socialsoccerSpec: Spec = [
       "Ticket",
     ],
   }),
+
   query(getFields, {
     entities: [
       "User",
@@ -125,6 +129,7 @@ export const socialsoccerSpec: Spec = [
       "Match",
     ],
   }),
+
   action(processPayment, {
     entities: [
       "PlayerProfile",
@@ -136,6 +141,7 @@ export const socialsoccerSpec: Spec = [
       "Match",
     ],
   }),
+
   action(submitRefereeRating, {
     entities: [
       "PlayerProfile",
@@ -147,18 +153,8 @@ export const socialsoccerSpec: Spec = [
       "Match",
     ],
   }),
+
   action(updateMatchStats, {
-    entities: [
-      "PlayerProfile",
-      "Payment",
-      "Ticket",
-      "RefereeRating",
-      "Referee",
-      "PlayerStats",
-      "Match",
-    ],
-  }),
-  action(createMatch, {
     entities: [
       "PlayerProfile",
       "Payment",

@@ -60,7 +60,7 @@ export const getPlayerProfile: GetPlayerProfile<
 
 export const getUpcomingMatches: GetUpcomingMatches<
   void,
-  (Match & { field: Field; referee: Referee | null })[]
+  (Match & { field: Field | null; referee: Referee | null })[]
 > = async (_args, context) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");

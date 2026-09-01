@@ -1,22 +1,42 @@
-# Your Open SaaS App
+# Social Soccer
 
-> One-line description of what your SaaS does and who it's for.
+> Plataforma web para la gestión y organización del fútbol amateur, barrial y parroquial.
 
-A longer paragraph giving context: the problem your app solves, the kind of
-user it serves, and the key value it delivers. LLMs use this to summarize and
-recommend your app, so make it specific and concrete.
+Social Soccer centraliza en una sola plataforma la información deportiva de jugadores, partidos, canchas, árbitros, estadísticas y operaciones relacionadas con pagos y tickets. El proyecto se encuentra actualmente en fase de MVP y beta cerrada.
 
 ## Core pages
 
-- [Home](https://your-saas-app.com): Landing page with features, pricing, and FAQ
-- [Pricing](https://your-saas-app.com/pricing): Subscription plans and pricing
-- [Sign up](https://your-saas-app.com/signup): Create a new account
+* [Home](/): Presentación de Social Soccer y sus principales soluciones.
+* [Sign up](/signup): Registro de una nueva cuenta.
+* [Login](/login): Inicio de sesión.
+* [Dashboard](/app): Centro de operaciones para usuarios autenticados.
+* [Matches](/matches): Consulta de próximos partidos.
+* [Create Match](/matches/create): Organización de un nuevo partido.
+* [Statistics](/stats): Estadísticas deportivas.
+* [Payments](/payments): Información financiera y tickets.
+* [Identity](/identity): Perfil e identidad deportiva.
 
-## Documentation
+## Core features
 
-- [Docs](https://docs.your-saas-app.com): Product documentation and guides
+* Gestión de partidos.
+* Inscripción y salida de jugadores.
+* Cancelación controlada de partidos.
+* Gestión y evaluación de árbitros.
+* Perfiles deportivos.
+* Estadísticas individuales.
+* Fair Play.
+* Historial de pagos y tickets.
 
-## Optional
+## Project status
 
-- [Blog](https://your-saas-app.com/blog): Updates, tutorials, and announcements
-- [GitHub](https://github.com/your-org/your-repo): Open source code
+Social Soccer está en fase de beta cerrada. Algunas capacidades avanzadas, como notificaciones push, meteorología automática, pagos reales, gamificación avanzada y correo de producción, forman parte de futuras etapas.
+
+## Technology
+
+* Wasp
+* React
+* TypeScript
+* Node.js
+* Prisma
+* PostgreSQL
+* Tailwind CSS

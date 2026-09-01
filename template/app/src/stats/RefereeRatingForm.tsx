@@ -49,11 +49,12 @@ export function RefereeRatingForm({
     propRefereeName ||
     referees?.find((r) => r.id === activeRefereeId)?.fullName ||
     "Árbitro Seleccionado";
+
   const activeMatchTitle =
     propMatchTitle ||
-    upcomingMatches?.find((m) => m.id === activeMatchId)?.homeTeam
+    (upcomingMatches?.find((m) => m.id === activeMatchId)?.homeTeam
       ? `${upcomingMatches?.find((m) => m.id === activeMatchId)?.homeTeam} vs ${upcomingMatches?.find((m) => m.id === activeMatchId)?.awayTeam}`
-      : "Partido Seleccionado";
+      : "Partido Seleccionado");
 
   const presets = [
     "Puntualidad excelente",
@@ -146,7 +147,10 @@ export function RefereeRatingForm({
               {upcomingMatches?.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.homeTeam} vs {m.awayTeam} (
-                  {new Date(m.date).toLocaleDateString()})
+                  {m.date
+                    ? new Date(m.date).toLocaleDateString()
+                    : "Fecha pendiente"}
+                  )
                 </option>
               ))}
             </select>
@@ -205,7 +209,6 @@ export function RefereeRatingForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Star Selection */}
           <div className="flex flex-col items-center justify-center rounded-xl bg-slate-50 p-3 dark:bg-slate-800/40">
             <span className="text-muted-foreground mb-2 text-xs font-semibold">
               Calificación por Estrellas (1 a 5):
@@ -237,7 +240,6 @@ export function RefereeRatingForm({
             )}
           </div>
 
-          {/* Preset Feedback Tags */}
           <div>
             <span className="text-muted-foreground mb-1.5 block text-[11px] font-semibold">
               Comentarios Rápidos:
@@ -258,7 +260,6 @@ export function RefereeRatingForm({
             </div>
           </div>
 
-          {/* Comment Field */}
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
               {isCommentRequired ? (
