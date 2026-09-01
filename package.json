@@ -1,6 +1,9 @@
 {
   "name": "wasp-repo",
   "type": "module",
+  "engines": {
+    "node": ">=24.14.1"
+  },
   "main": "template/app/package.json",
   "scripts": {
     "build": "cd template/app && npx --yes @wasp.sh/wasp-cli-linux-x64-glibc@0.25.0 build",

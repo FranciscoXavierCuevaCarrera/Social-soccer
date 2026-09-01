@@ -1,3 +1,7 @@
+[variables]
+NIXPACKS_NODE_VERSION = "24"
+NODE_VERSION = "24.14.1"
+
 [phases.setup]
 nixPkgs = ["nodejs_24"]
 

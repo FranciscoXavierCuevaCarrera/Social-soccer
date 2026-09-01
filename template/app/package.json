@@ -5,6 +5,9 @@
     ".wasp/out/*",
     ".wasp/out/sdk/wasp"
   ],
+  "engines": {
+    "node": ">=24.14.1"
+  },
   "scripts": {
     "build": "npx --yes @wasp.sh/wasp-cli-linux-x64-glibc@0.25.0 build",
     "start": "cd .wasp/build && npm start"
