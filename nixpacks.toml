@@ -12,4 +12,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd template/app/.wasp/build && npm start"
+cmd = "cd template/app && npm start"

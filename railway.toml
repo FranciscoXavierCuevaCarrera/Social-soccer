@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "cd template/app && npm start"
+restartPolicyType = "ON_FAILURE"
