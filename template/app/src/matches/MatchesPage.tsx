@@ -19,10 +19,8 @@ import {
 import ThemeToggle from "../client/components/ThemeToggle";
 
 export function MatchesPage() {
-  const {
-    data: dbMatches,
-    refetch: refetchMatches,
-  } = useQuery(getUpcomingMatches);
+  const { data: dbMatches, refetch: refetchMatches } =
+    useQuery(getUpcomingMatches);
   const { data: dbReferees } = useQuery(getReferees);
   const { data: dbFields } = useQuery(getFields);
 
@@ -111,28 +109,40 @@ export function MatchesPage() {
 
   const matchesToDisplay =
     dbMatches && dbMatches.length > 0
-      ? dbMatches.map((m: { id: string; date: Date | string; time: string; homeTeam: string; awayTeam: string; field?: { name: string; location: string } | null; referee?: { fullName: string; averageRating: number } | null; weatherAlert?: string | null; status: string }) => ({
-          id: m.id,
-          date: new Date(m.date).toLocaleDateString("es-EC", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+      ? dbMatches.map(
+          (m: {
+            id: string;
+            date: Date | string;
+            time: string;
+            homeTeam: string;
+            awayTeam: string;
+            field?: { name: string; location: string } | null;
+            referee?: { fullName: string; averageRating: number } | null;
+            weatherAlert?: string | null;
+            status: string;
+          }) => ({
+            id: m.id,
+            date: new Date(m.date).toLocaleDateString("es-EC", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }),
+            time: m.time,
+            homeTeam: m.homeTeam,
+            awayTeam: m.awayTeam,
+            homeLogo: "🛡️",
+            awayLogo: "⚡",
+            fieldName: m.field ? `${m.field.name}` : "Cancha Principal",
+            location: m.field ? m.field.location : "Complejo Deportivo",
+            referee: m.referee
+              ? `${m.referee.fullName} (${m.referee.averageRating.toFixed(1)} ★)`
+              : "Sin árbitro asignado",
+            weatherAlert: m.weatherAlert || "☀️ Tiempo Soleado Esperado",
+            status: m.status,
+            vocaliaPaid: true,
           }),
-          time: m.time,
-          homeTeam: m.homeTeam,
-          awayTeam: m.awayTeam,
-          homeLogo: "🛡️",
-          awayLogo: "⚡",
-          fieldName: m.field ? `${m.field.name}` : "Cancha Principal",
-          location: m.field ? m.field.location : "Complejo Deportivo",
-          referee: m.referee
-            ? `${m.referee.fullName} (${m.referee.averageRating.toFixed(1)} ★)`
-            : "Sin árbitro asignado",
-          weatherAlert: m.weatherAlert || "☀️ Tiempo Soleado Esperado",
-          status: m.status,
-          vocaliaPaid: true,
-        }))
+        )
       : mockFallbackMatches;
 
   return (

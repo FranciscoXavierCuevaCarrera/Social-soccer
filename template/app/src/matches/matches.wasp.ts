@@ -6,11 +6,13 @@ import { MatchListPage } from "./MatchListPage" with { type: "ref" };
 
 import {
   createMatch,
+  deleteMatch,
   getMatch,
   getMatches,
   getReferees,
   joinMatch,
   leaveMatch,
+  updateMatch,
 } from "./operations" with { type: "ref" };
 
 export const matchesSpec = [
@@ -46,6 +48,14 @@ export const matchesSpec = [
 
   action(createMatch, {
     entities: ["Match", "MatchPlayer", "Referee"],
+  }),
+
+  action(updateMatch, {
+    entities: ["Match", "Referee"],
+  }),
+
+  action(deleteMatch, {
+    entities: ["Match", "MatchPlayer", "Payment", "Ticket", "RefereeRating"],
   }),
 
   action(joinMatch, {

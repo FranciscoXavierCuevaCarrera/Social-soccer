@@ -5,23 +5,17 @@ test.describe("Social Soccer landing page tests", () => {
     await page.goto("/");
   });
 
-  test("has title", async ({ page }) => {
-    await expect(page).toHaveTitle(/SaaS|Social/);
+  test("has main hero heading", async ({ page }) => {
+    await expect(page.getByText("El fútbol barrial")).toBeVisible();
   });
 
-  test("get started link", async ({ page }) => {
-    await page.getByRole("link", { name: "Get Started" }).click();
+  test("registrarme link navigates to signup", async ({ page }) => {
+    await page.getByRole("link", { name: "Registrarme" }).first().click();
     await page.waitForURL("**/signup");
   });
 
-  test("ver partidos link", async ({ page }) => {
-    await page.getByRole("link", { name: "Ver Partidos" }).click();
-    await page.waitForURL("**/matches");
-  });
-
-  test("headings and navigation", async ({ page }) => {
-    await expect(
-      page.getByRole("heading", { name: "Frequently asked questions" }),
-    ).toBeVisible();
+  test("dashboard button navigates to signup/app", async ({ page }) => {
+    await page.getByRole("link", { name: "Ingresar al Dashboard →" }).click();
+    await page.waitForURL("**/signup");
   });
 });

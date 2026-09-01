@@ -5,20 +5,94 @@ import { type User } from "wasp/entities";
 type MockUserData = Omit<User, "id">;
 
 /**
- * This function, which we've imported in `app.db.seeds` in the `main.wasp` file,
- * seeds the database with mock users via the `wasp db seed` command.
- * For more info see: https://wasp.sh/docs/data-model/backends#seeding-the-database
+ * Social Soccer Database Seeds
+ *
+ * Credenciales de Desarrollo / Demostración:
+ * ----------------------------------------------------
+ * Administrador:
+ * - Email: admin@socialsoccer.local
+ * - Rol: Admin (isAdmin: true) -> Acceso a /admin
+ *
+ * Jugador de prueba:
+ * - Email: jugador@socialsoccer.local
+ * - Rol: Jugador (isAdmin: false) -> Acceso a /app
+ * ----------------------------------------------------
  */
 export async function seedMockUsers(prismaClient: PrismaClient) {
-  await Promise.all(
-    generateMockUsersData(50).map((data) => prismaClient.user.create({ data })),
-  );
+  // 1. Administrador de demostración
+  const adminEmail = "admin@socialsoccer.local";
+  const existingAdmin = await prismaClient.user.findFirst({
+    where: { email: adminEmail },
+  });
 
+  if (!existingAdmin) {
+    await prismaClient.user.create({
+      data: {
+        email: adminEmail,
+        username: "admin",
+        isAdmin: true,
+        credits: 10,
+        subscriptionStatus: "active",
+        subscriptionPlan: "pro",
+      },
+    });
+  }
+
+  // 2. Jugador de demostración
+  const playerEmail = "jugador@socialsoccer.local";
+  let playerUser = await prismaClient.user.findFirst({
+    where: { email: playerEmail },
+    include: { playerProfile: true },
+  });
+
+  if (!playerUser) {
+    playerUser = await prismaClient.user.create({
+      data: {
+        email: playerEmail,
+        username: "jugador_demo",
+        isAdmin: false,
+        credits: 5,
+        subscriptionStatus: "active",
+        subscriptionPlan: "default",
+        playerProfile: {
+          create: {
+            fullName: "Jugador Demo SocialSoccer",
+            currentClub: "Club Deportivo El Batán",
+            position: "Mediocampista",
+            number: 10,
+            stats: {
+              create: {
+                goals: 12,
+                assists: 8,
+                yellowCards: 1,
+                redCards: 0,
+                fairPlayScore: 98,
+                matchesPlayed: 15,
+              },
+            },
+          },
+        },
+      },
+      include: { playerProfile: true },
+    });
+  }
+
+  // 3. Usuarios de prueba adicionales con faker
+  const mockUsersCount = await prismaClient.user.count();
+  if (mockUsersCount < 10) {
+    await Promise.all(
+      generateMockUsersData(10).map((data) =>
+        prismaClient.user.create({ data }),
+      ),
+    );
+  }
+
+  // 4. Árbitros de prueba
   const refereesData = [
     { fullName: "David Gilmour", badgeNumber: "REF-001", averageRating: 5.0 },
-    { fullName: "Syd Barrett", badgeNumber: "REF-002", averageRating: 5.0 },
-    { fullName: "Richard Wright", badgeNumber: "REF-003", averageRating: 5.0 },
-    { fullName: "Nick Mason", badgeNumber: "REF-004", averageRating: 5.0 },
+    { fullName: "Syd Barrett", badgeNumber: "REF-002", averageRating: 4.8 },
+    { fullName: "Richard Wright", badgeNumber: "REF-003", averageRating: 4.9 },
+    { fullName: "Nick Mason", badgeNumber: "REF-004", averageRating: 4.7 },
   ];
 
   for (const ref of refereesData) {
@@ -30,6 +104,7 @@ export async function seedMockUsers(prismaClient: PrismaClient) {
     }
   }
 
+  // 5. Canchas de prueba
   const fieldsData = [
     {
       name: "Cancha 1 — Césped Sintético Principal",

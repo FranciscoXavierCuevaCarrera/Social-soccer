@@ -26,7 +26,7 @@ export const logUserIn = async ({ page, user }: { page: Page; user: User }) => {
     clickLogin,
   ]);
 
-  await page.waitForURL("**/matches");
+  await page.waitForURL(/.*(app|matches)/);
 };
 
 export const signUserUp = async ({

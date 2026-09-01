@@ -123,6 +123,13 @@ export const submitRefereeRating: SubmitRefereeRating<
     throw new HttpError(401, "Usuario no autenticado");
   }
 
+  if (args.stars < 3 && (!args.comment || !args.comment.trim())) {
+    throw new HttpError(
+      400,
+      "El comentario es obligatorio para calificaciones menores a 3 estrellas.",
+    );
+  }
+
   try {
     const rating = await context.entities.RefereeRating.create({
       data: {

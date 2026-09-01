@@ -8,13 +8,9 @@ import {
 
 import { LoginPage } from "./LoginPage" with { type: "ref" };
 import { SignupPage } from "./SignupPage" with { type: "ref" };
-import { EmailVerificationPage } from "./email-and-pass/EmailVerificationPage" with { type: "ref" };
 import { PasswordResetPage } from "./email-and-pass/PasswordResetPage" with { type: "ref" };
 import { RequestPasswordResetPage } from "./email-and-pass/RequestPasswordResetPage" with { type: "ref" };
-import {
-  getPasswordResetEmailContent,
-  getVerificationEmailContent,
-} from "./email-and-pass/emails" with { type: "ref" };
+import { getPasswordResetEmailContent } from "./email-and-pass/emails" with { type: "ref" };
 import {
   getDiscordAuthConfig,
   getDiscordUserFields,
@@ -27,12 +23,8 @@ import {
 
 const emailAuthMethod: NonNullable<AuthMethods["email"]> = {
   fromField: {
-    name: "Open SaaS App",
-    email: "me@example.com",
-  },
-  emailVerification: {
-    clientRoute: "EmailVerificationRoute",
-    getEmailContentFn: getVerificationEmailContent,
+    name: "Social Soccer",
+    email: "noreply@socialsoccer.local",
   },
   passwordReset: {
     clientRoute: "PasswordResetRoute",
@@ -72,15 +64,11 @@ export const authConfig: Auth = {
   userEntity: "User",
   methods: {
     // NOTE: If you decide to not use email auth, make sure to also delete the related routes below.
-    //       (RequestPasswordResetRoute, PasswordResetRoute, EmailVerificationRoute)
+    //       (RequestPasswordResetRoute, PasswordResetRoute)
     email: emailAuthMethod,
-    // usernameAndPassword: usernameAndPasswordAuthMethod,
-    // google: googleAuthMethod,
-    // gitHub: gitGubAuthMethod,
-    // discord: discordAuthMethod,
   },
   onAuthFailedRedirectTo: "/login",
-  onAuthSucceededRedirectTo: "/matches",
+  onAuthSucceededRedirectTo: "/app",
 };
 
 export const authSpec: Spec = [
@@ -92,9 +80,4 @@ export const authSpec: Spec = [
     page(RequestPasswordResetPage),
   ),
   route("PasswordResetRoute", "/password-reset", page(PasswordResetPage)),
-  route(
-    "EmailVerificationRoute",
-    "/email-verification",
-    page(EmailVerificationPage),
-  ),
 ];

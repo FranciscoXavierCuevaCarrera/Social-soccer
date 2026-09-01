@@ -18,21 +18,21 @@ test.afterAll(async () => {
 });
 
 test.describe("auth redirect tests", () => {
-  test("logged-in user visiting /login should redirect to /matches", async () => {
+  test("logged-in user visiting /login should redirect to /app", async () => {
     // User is already logged in from beforeAll
     await page.goto("/login");
 
-    // Should be redirected to /matches
-    await page.waitForURL("**/matches", { timeout: 5000 });
-    expect(page.url()).toContain("/matches");
+    // Should be redirected to /app
+    await page.waitForURL("**/app", { timeout: 5000 });
+    expect(page.url()).toContain("/app");
   });
 
-  test("logged-in user visiting /signup should redirect to /matches", async () => {
+  test("logged-in user visiting /signup should redirect to /app", async () => {
     // User is already logged in from beforeAll
     await page.goto("/signup");
 
-    // Should be redirected to /matches
-    await page.waitForURL("**/matches", { timeout: 5000 });
-    expect(page.url()).toContain("/matches");
+    // Should be redirected to /app
+    await page.waitForURL("**/app", { timeout: 5000 });
+    expect(page.url()).toContain("/app");
   });
 });

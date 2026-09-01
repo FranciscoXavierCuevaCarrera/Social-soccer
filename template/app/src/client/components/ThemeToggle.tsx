@@ -2,21 +2,22 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState<boolean>(true);
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const storedTheme = localStorage.getItem("socialsoccer-theme");
+      return storedTheme !== "light";
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // Inicializar con la clase 'dark' predeterminada según DESIGN.md
     const root = document.documentElement;
-    const storedTheme = localStorage.getItem("socialsoccer-theme");
-
-    if (storedTheme === "light") {
-      root.classList.remove("dark");
-      setIsDark(false);
-    } else {
+    if (isDark) {
       root.classList.add("dark");
-      setIsDark(true);
+    } else {
+      root.classList.remove("dark");
     }
-  }, []);
+  }, [isDark]);
 
   const toggleTheme = () => {
     const root = document.documentElement;

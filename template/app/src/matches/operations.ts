@@ -26,10 +26,7 @@ type CreateMatchContext = {
   };
 };
 
-export const getReferees = async (
-  _args: void,
-  context: RefereeContext,
-) => {
+export const getReferees = async (_args: void, context: RefereeContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -41,10 +38,7 @@ export const getReferees = async (
   });
 };
 
-export const getMatches = async (
-  _args: void,
-  context: BaseMatchesContext,
-) => {
+export const getMatches = async (_args: void, context: BaseMatchesContext) => {
   if (!context.user) {
     throw new HttpError(401, "Usuario no autenticado");
   }
@@ -148,10 +142,7 @@ export const createMatch = async (
     args.maxPlayers < 2 ||
     args.maxPlayers > 30
   ) {
-    throw new HttpError(
-      400,
-      "El número de jugadores debe estar entre 2 y 30",
-    );
+    throw new HttpError(400, "El número de jugadores debe estar entre 2 y 30");
   }
 
   if (args.refereeId) {
@@ -215,10 +206,7 @@ export const joinMatch = async (
   });
 
   if (existing) {
-    throw new HttpError(
-      400,
-      "Ya estás inscrito en este partido",
-    );
+    throw new HttpError(400, "Ya estás inscrito en este partido");
   }
 
   if (match.players.length >= match.maxPlayers) {
@@ -251,10 +239,7 @@ export const leaveMatch = async (
   });
 
   if (!existing) {
-    throw new HttpError(
-      400,
-      "No estás inscrito en este partido",
-    );
+    throw new HttpError(400, "No estás inscrito en este partido");
   }
 
   await context.entities.MatchPlayer.delete({
@@ -269,4 +254,158 @@ export const leaveMatch = async (
   return {
     success: true,
   };
+};
+
+export const updateMatch = async (
+  args: {
+    id: string;
+    location?: string;
+    dateTime?: string;
+    maxPlayers?: number;
+    refereeId?: string | null;
+    status?: string;
+  },
+  context: BaseMatchesContext & {
+    entities: {
+      Match: PrismaClient["match"];
+      Referee: PrismaClient["referee"];
+    };
+  },
+) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  const existingMatch = await context.entities.Match.findUnique({
+    where: { id: args.id },
+  });
+
+  if (!existingMatch) {
+    throw new HttpError(404, "Partido no encontrado");
+  }
+
+  const isCreator = existingMatch.createdById === context.user.id;
+  const isAdmin = context.user.isAdmin;
+  if (!isCreator && !isAdmin) {
+    throw new HttpError(
+      403,
+      "No tienes permisos para editar este partido. Solo el creador o un administrador pueden modificarlo.",
+    );
+  }
+
+  const dataToUpdate: Record<string, unknown> = {};
+
+  if (args.location !== undefined) {
+    if (!args.location.trim()) {
+      throw new HttpError(400, "La ubicación no puede estar vacía");
+    }
+    dataToUpdate.location = args.location.trim();
+  }
+
+  if (args.dateTime !== undefined) {
+    const matchDate = new Date(args.dateTime);
+    if (Number.isNaN(matchDate.getTime())) {
+      throw new HttpError(400, "La fecha no es válida");
+    }
+    dataToUpdate.dateTime = matchDate;
+  }
+
+  if (args.maxPlayers !== undefined) {
+    if (
+      !Number.isInteger(args.maxPlayers) ||
+      args.maxPlayers < 2 ||
+      args.maxPlayers > 30
+    ) {
+      throw new HttpError(
+        400,
+        "El número de jugadores debe estar entre 2 y 30",
+      );
+    }
+    dataToUpdate.maxPlayers = args.maxPlayers;
+  }
+
+  if (args.refereeId !== undefined) {
+    if (args.refereeId) {
+      const referee = await context.entities.Referee.findUnique({
+        where: { id: args.refereeId },
+      });
+      if (!referee) {
+        throw new HttpError(404, "Árbitro no encontrado");
+      }
+      dataToUpdate.refereeId = args.refereeId;
+    } else {
+      dataToUpdate.refereeId = null;
+    }
+  }
+
+  if (args.status !== undefined) {
+    dataToUpdate.status = args.status;
+  }
+
+  return context.entities.Match.update({
+    where: { id: args.id },
+    data: dataToUpdate,
+  });
+};
+
+export const deleteMatch = async (
+  args: { id: string },
+  context: BaseMatchesContext & {
+    entities: {
+      Match: PrismaClient["match"];
+      MatchPlayer: PrismaClient["matchPlayer"];
+      Payment: PrismaClient["payment"];
+      Ticket: PrismaClient["ticket"];
+      RefereeRating: PrismaClient["refereeRating"];
+    };
+  },
+) => {
+  if (!context.user) {
+    throw new HttpError(401, "Usuario no autenticado");
+  }
+
+  const existingMatch = await context.entities.Match.findUnique({
+    where: { id: args.id },
+  });
+
+  if (!existingMatch) {
+    throw new HttpError(404, "Partido no encontrado");
+  }
+
+  const isCreator = existingMatch.createdById === context.user.id;
+  const isAdmin = context.user.isAdmin;
+  if (!isCreator && !isAdmin) {
+    throw new HttpError(
+      403,
+      "No tienes permisos para eliminar este partido. Solo el creador o un administrador pueden eliminarlo.",
+    );
+  }
+
+  const hasPayments =
+    (await context.entities.Payment.count({
+      where: { matchId: args.id },
+    })) > 0;
+  const hasTickets =
+    (await context.entities.Ticket.count({
+      where: { matchId: args.id },
+    })) > 0;
+  const hasRatings =
+    (await context.entities.RefereeRating.count({
+      where: { matchId: args.id },
+    })) > 0;
+
+  if (hasPayments || hasTickets || hasRatings) {
+    return context.entities.Match.update({
+      where: { id: args.id },
+      data: { status: "CANCELLED" },
+    });
+  } else {
+    await context.entities.MatchPlayer.deleteMany({
+      where: { matchId: args.id },
+    });
+    await context.entities.Match.delete({
+      where: { id: args.id },
+    });
+    return { success: true };
+  }
 };

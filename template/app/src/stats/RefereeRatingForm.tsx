@@ -83,6 +83,13 @@ export function RefereeRatingForm({
       return;
     }
 
+    if (rating < 3 && (!comment || !comment.trim())) {
+      setErrorMessage(
+        "El comentario es obligatorio para calificaciones menores a 3 estrellas.",
+      );
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await submitRefereeRating({
@@ -102,6 +109,14 @@ export function RefereeRatingForm({
       setIsSubmitting(false);
     }
   };
+
+  const isCommentRequired = rating > 0 && rating < 3;
+  const isFormValid =
+    rating > 0 &&
+    activeRefereeId &&
+    activeMatchId &&
+    (!isCommentRequired || comment.trim().length > 0) &&
+    !isSubmitting;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xl transition-all duration-300 dark:border-slate-700 dark:bg-[#2E3138]">
@@ -245,24 +260,40 @@ export function RefereeRatingForm({
 
           {/* Comment Field */}
           <div>
+            <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
+              {isCommentRequired ? (
+                <span className="font-bold text-red-600 dark:text-red-400">
+                  Comentario * (el comentario es obligatorio para calificaciones
+                  menores a 3 estrellas):
+                </span>
+              ) : (
+                "Comentario (opcional):"
+              )}
+            </label>
             <textarea
               value={comment}
               onChange={(e) =>
                 setComment((e.target as unknown as { value: string }).value)
               }
-              placeholder="Escribe comentarios u observaciones adicionales sobre el arbitraje..."
-              className="w-full rounded-xl border border-slate-200 bg-transparent p-2.5 text-xs outline-none focus:ring-2 focus:ring-[#0B5FA5] dark:border-slate-700"
+              placeholder={
+                isCommentRequired
+                  ? "Describe el motivo de la calificación (obligatorio)..."
+                  : "Escribe comentarios u observaciones adicionales..."
+              }
+              className={`w-full rounded-xl border bg-transparent p-2.5 text-xs outline-none focus:ring-2 ${
+                isCommentRequired && !comment.trim()
+                  ? "border-red-400 focus:ring-red-500"
+                  : "border-slate-200 focus:ring-[#0B5FA5] dark:border-slate-700"
+              }`}
               rows={2}
             />
           </div>
 
           <button
             type="submit"
-            disabled={
-              rating === 0 || !activeRefereeId || !activeMatchId || isSubmitting
-            }
+            disabled={!isFormValid}
             className={`w-full cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold shadow-md transition-all ${
-              rating > 0 && activeRefereeId && activeMatchId && !isSubmitting
+              isFormValid
                 ? "bg-[#1D3557] text-white hover:bg-[#1D3557]/90 dark:bg-[#0B5FA5] dark:hover:bg-[#0B5FA5]/80"
                 : "cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600"
             }`}

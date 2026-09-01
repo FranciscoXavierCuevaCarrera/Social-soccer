@@ -9,10 +9,8 @@ import { Link, routes } from "wasp/client/router";
 
 export const CreateMatchPage = () => {
   const createMatchAction = useAction(createMatch);
-  const {
-    data: referees,
-    isLoading: isRefereesLoading,
-  } = useQuery(getReferees);
+  const { data: referees, isLoading: isRefereesLoading } =
+    useQuery(getReferees);
 
   const [location, setLocation] = useState("");
   const [dateTime, setDateTime] = useState("");

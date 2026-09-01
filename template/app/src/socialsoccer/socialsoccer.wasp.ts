@@ -1,5 +1,6 @@
 import { action, page, query, route, type Spec } from "@wasp.sh/spec";
 
+import { AppPage } from "../app/AppPage" with { type: "ref" };
 import { IdentityPage } from "../identity/IdentityPage" with { type: "ref" };
 import { MatchesPage } from "../matches/MatchesPage" with { type: "ref" };
 import { PaymentsPage } from "../payments/PaymentsPage" with { type: "ref" };
@@ -24,6 +25,7 @@ import {
 
 export const socialsoccerSpec: Spec = [
   // Rutas y Páginas
+  route("AppRoute", "/app", page(AppPage, { authRequired: true })),
   route(
     "IdentityRoute",
     "/identity",

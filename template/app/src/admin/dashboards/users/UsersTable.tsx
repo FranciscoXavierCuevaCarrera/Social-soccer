@@ -296,7 +296,7 @@ export function UsersTable() {
         {isLoading && <LoadingSpinner />}
         {!!data?.users &&
           data?.users?.length > 0 &&
-          data.users.map((user: any) => (
+          data.users.map((user: User) => (
             <div
               key={user.id}
               className="py-4.5 grid grid-cols-9 gap-4 px-4 md:px-6"
