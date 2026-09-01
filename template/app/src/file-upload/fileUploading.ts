@@ -4,6 +4,15 @@ import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE_BYTES } from "./validation";
 type AllowedFileTypes = (typeof ALLOWED_FILE_TYPES)[number];
 export type FileWithValidType = File & { type: AllowedFileTypes };
 
+export function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function uploadFileWithProgress({
   file,
   s3UploadUrl,
@@ -15,6 +24,18 @@ export async function uploadFileWithProgress({
   s3UploadFields: Record<string, string>;
   setUploadProgressPercent: (percentage: number) => void;
 }) {
+  if (
+    !s3UploadUrl ||
+    s3UploadUrl.startsWith("mock://") ||
+    s3UploadUrl.includes("your-bucket-name") ||
+    s3UploadUrl.includes("dummy-bucket")
+  ) {
+    setUploadProgressPercent(50);
+    const dataUrl = await readFileAsDataUrl(file);
+    setUploadProgressPercent(100);
+    return { ok: true, status: 200, dataUrl };
+  }
+
   const formData = getFileUploadFormData(file, s3UploadFields);
 
   return ky.post(s3UploadUrl, {

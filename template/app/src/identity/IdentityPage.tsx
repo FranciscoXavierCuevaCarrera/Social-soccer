@@ -24,6 +24,7 @@ import {
 } from "wasp/client/operations";
 import ThemeToggle from "../client/components/ThemeToggle";
 import {
+  readFileAsDataUrl,
   uploadFileWithProgress,
   validateFile,
 } from "../file-upload/fileUploading";
@@ -141,24 +142,51 @@ export function IdentityPage() {
         fileName: validatedFile.name,
       });
 
-      await uploadFileWithProgress({
+      const uploadResult = await uploadFileWithProgress({
         file: validatedFile,
         s3UploadUrl,
         s3UploadFields,
         setUploadProgressPercent,
       });
 
-      await addFileToDb({
-        s3Key,
-        fileType: validatedFile.type,
-        fileName: validatedFile.name,
-      });
+      let finalPhotoUrl = "";
+      if (
+        uploadResult &&
+        typeof uploadResult === "object" &&
+        "dataUrl" in uploadResult &&
+        typeof (uploadResult as { dataUrl?: string }).dataUrl === "string"
+      ) {
+        finalPhotoUrl = (uploadResult as { dataUrl: string }).dataUrl;
+      }
 
-      const signedUrl = await getDownloadFileSignedURL({ s3Key });
+      try {
+        await addFileToDb({
+          s3Key,
+          fileType: validatedFile.type,
+          fileName: validatedFile.name,
+        });
+
+        if (!finalPhotoUrl) {
+          const signedUrl = await getDownloadFileSignedURL({ s3Key });
+          if (
+            signedUrl &&
+            !signedUrl.includes("your-bucket-name") &&
+            !signedUrl.includes("dummy-bucket")
+          ) {
+            finalPhotoUrl = signedUrl;
+          }
+        }
+      } catch (dbErr) {
+        console.warn("Seguimiento de archivo en DB omitido:", dbErr);
+      }
+
+      if (!finalPhotoUrl) {
+        finalPhotoUrl = await readFileAsDataUrl(validatedFile);
+      }
 
       setForm((current) => ({
         ...current,
-        photoUrl: signedUrl,
+        photoUrl: finalPhotoUrl,
       }));
 
       setSaved(false);
