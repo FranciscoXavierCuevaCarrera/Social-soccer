@@ -46,7 +46,7 @@ export const matchesSpec = [
   }),
 
   action(updateMatch, {
-    entities: ["Match", "Referee"],
+    entities: ["Match", "MatchPlayer", "Referee"],
   }),
 
   action(deleteMatch, {
