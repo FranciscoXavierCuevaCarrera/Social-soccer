@@ -48,14 +48,23 @@ export function MatchesPage() {
 
     try {
       setIsSubmitting(true);
+      const fieldObj = dbFields?.find(
+        (f: { id: string; name: string; location: string }) =>
+          f.id === selectedFieldId,
+      );
+      const locationName = fieldObj
+        ? `${fieldObj.name} (${fieldObj.location})`
+        : homeTeam
+          ? `${homeTeam} vs ${awayTeam}`
+          : "Cancha Principal";
+      const combinedDateTime =
+        date && time ? `${date}T${time}:00` : new Date().toISOString();
+
       await createMatch({
-        homeTeam,
-        awayTeam,
-        date,
-        time,
-        fieldId: selectedFieldId,
-        refereeId: selectedRefereeId || undefined,
-        weatherAlert: weatherAlert || undefined,
+        location: locationName,
+        dateTime: combinedDateTime,
+        maxPlayers: 10,
+        refereeId: selectedRefereeId || null,
       });
       await refetchMatches();
       setIsModalOpen(false);
@@ -112,36 +121,61 @@ export function MatchesPage() {
       ? dbMatches.map(
           (m: {
             id: string;
-            date: Date | string;
-            time: string;
-            homeTeam: string;
-            awayTeam: string;
+            location?: string | null;
+            dateTime?: Date | string | null;
+            maxPlayers?: number | null;
+            status?: string | null;
+            date?: Date | string | null;
+            time?: string | null;
+            homeTeam?: string | null;
+            awayTeam?: string | null;
             field?: { name: string; location: string } | null;
             referee?: { fullName: string; averageRating: number } | null;
             weatherAlert?: string | null;
-            status: string;
-          }) => ({
-            id: m.id,
-            date: new Date(m.date).toLocaleDateString("es-EC", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }),
-            time: m.time,
-            homeTeam: m.homeTeam,
-            awayTeam: m.awayTeam,
-            homeLogo: "🛡️",
-            awayLogo: "⚡",
-            fieldName: m.field ? `${m.field.name}` : "Cancha Principal",
-            location: m.field ? m.field.location : "Complejo Deportivo",
-            referee: m.referee
-              ? `${m.referee.fullName} (${m.referee.averageRating.toFixed(1)} ★)`
-              : "Sin árbitro asignado",
-            weatherAlert: m.weatherAlert || "☀️ Tiempo Soleado Esperado",
-            status: m.status,
-            vocaliaPaid: true,
-          }),
+          }) => {
+            const matchDateObj = m.dateTime
+              ? new Date(m.dateTime)
+              : m.date
+                ? new Date(m.date)
+                : new Date();
+            const dateStr = !isNaN(matchDateObj.getTime())
+              ? matchDateObj.toLocaleDateString("es-EC", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "Fecha por definir";
+
+            return {
+              id: m.id,
+              date: dateStr,
+              time:
+                m.time ||
+                (m.dateTime
+                  ? new Date(m.dateTime).toLocaleTimeString("es-EC", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "Por definir"),
+              homeTeam: m.homeTeam || m.location || "Partido Barrial",
+              awayTeam: m.awayTeam || "Equipo Rival",
+              homeLogo: "🛡️",
+              awayLogo: "⚡",
+              fieldName: m.field
+                ? `${m.field.name}`
+                : m.location || "Cancha Principal",
+              location: m.field
+                ? m.field.location
+                : m.location || "Complejo Deportivo",
+              referee: m.referee
+                ? `${m.referee.fullName} (${m.referee.averageRating.toFixed(1)} ★)`
+                : "Sin árbitro asignado",
+              weatherAlert: m.weatherAlert || "☀️ Tiempo soleado",
+              status: m.status || "SCHEDULED",
+              vocaliaPaid: true,
+            };
+          },
         )
       : mockFallbackMatches;
 
