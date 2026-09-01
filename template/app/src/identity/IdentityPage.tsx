@@ -1,4 +1,3 @@
-import QRCode from "react-qr-code";
 import {
   AlertCircle,
   Award,
@@ -13,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState, type ChangeEvent } from "react";
+import QRCode from "react-qr-code";
 import {
   addFileToDb,
   createFileUploadUrl,
@@ -74,8 +74,7 @@ export function IdentityPage() {
       currentClub: playerProfile.currentClub ?? "Libre",
       position: playerProfile.position ?? "Mediocampista",
       number:
-        playerProfile.number !== null &&
-        playerProfile.number !== undefined
+        playerProfile.number !== null && playerProfile.number !== undefined
           ? String(playerProfile.number)
           : "",
       photoUrl: playerProfile.photoUrl ?? "",
@@ -107,8 +106,7 @@ export function IdentityPage() {
       currentClub: playerProfile.currentClub ?? "Libre",
       position: playerProfile.position ?? "Mediocampista",
       number:
-        playerProfile.number !== null &&
-        playerProfile.number !== undefined
+        playerProfile.number !== null && playerProfile.number !== undefined
           ? String(playerProfile.number)
           : "",
       photoUrl: playerProfile.photoUrl ?? "",
@@ -119,9 +117,7 @@ export function IdentityPage() {
     setIsEditing(false);
   };
 
-  const handlePhotoChange = async (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handlePhotoChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
@@ -140,11 +136,10 @@ export function IdentityPage() {
         throw new Error("La foto debe estar en formato JPG o PNG.");
       }
 
-      const { s3UploadUrl, s3UploadFields, s3Key } =
-        await createFileUploadUrl({
-          fileType: validatedFile.type,
-          fileName: validatedFile.name,
-        });
+      const { s3UploadUrl, s3UploadFields, s3Key } = await createFileUploadUrl({
+        fileType: validatedFile.type,
+        fileName: validatedFile.name,
+      });
 
       await uploadFileWithProgress({
         file: validatedFile,
@@ -247,9 +242,7 @@ export function IdentityPage() {
   if (isLoading) {
     return (
       <div className="bg-background text-foreground flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground text-sm">
-          Cargando perfil...
-        </p>
+        <p className="text-muted-foreground text-sm">Cargando perfil...</p>
       </div>
     );
   }
@@ -561,9 +554,7 @@ export function IdentityPage() {
               Validez Interligas Autónoma (Sin Retención de Dirigente)
             </span>
 
-            <span className="font-mono text-[10px]">
-              PERFIL ACTIVO
-            </span>
+            <span className="font-mono text-[10px]">PERFIL ACTIVO</span>
           </div>
         </div>
 
@@ -605,9 +596,7 @@ export function IdentityPage() {
                 <Copy className="h-4 w-4" />
               )}
 
-              <span>
-                {copied ? "¡Código Copiado!" : "Copiar Código"}
-              </span>
+              <span>{copied ? "¡Código Copiado!" : "Copiar Código"}</span>
             </button>
           </div>
 

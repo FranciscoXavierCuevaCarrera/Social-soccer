@@ -8,9 +8,6 @@ import {
 
 import { LoginPage } from "./LoginPage" with { type: "ref" };
 import { SignupPage } from "./SignupPage" with { type: "ref" };
-import { PasswordResetPage } from "./email-and-pass/PasswordResetPage" with { type: "ref" };
-import { RequestPasswordResetPage } from "./email-and-pass/RequestPasswordResetPage" with { type: "ref" };
-import { getPasswordResetEmailContent } from "./email-and-pass/emails" with { type: "ref" };
 import {
   getDiscordAuthConfig,
   getDiscordUserFields,
@@ -22,14 +19,6 @@ import {
 } from "./userSignupFields" with { type: "ref" };
 
 const emailAuthMethod: NonNullable<AuthMethods["email"]> = {
-  fromField: {
-    name: "Social Soccer",
-    email: "noreply@socialsoccer.local",
-  },
-  passwordReset: {
-    clientRoute: "PasswordResetRoute",
-    getEmailContentFn: getPasswordResetEmailContent,
-  },
   userSignupFields: getEmailUserFields,
 };
 
@@ -63,8 +52,6 @@ const discordAuthMethod: NonNullable<AuthMethods["discord"]> = {
 export const authConfig: Auth = {
   userEntity: "User",
   methods: {
-    // NOTE: If you decide to not use email auth, make sure to also delete the related routes below.
-    //       (RequestPasswordResetRoute, PasswordResetRoute)
     email: emailAuthMethod,
   },
   onAuthFailedRedirectTo: "/login",
@@ -74,10 +61,4 @@ export const authConfig: Auth = {
 export const authSpec: Spec = [
   route("LoginRoute", "/login", page(LoginPage)),
   route("SignupRoute", "/signup", page(SignupPage)),
-  route(
-    "RequestPasswordResetRoute",
-    "/request-password-reset",
-    page(RequestPasswordResetPage),
-  ),
-  route("PasswordResetRoute", "/password-reset", page(PasswordResetPage)),
 ];
