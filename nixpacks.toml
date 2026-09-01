@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["nodejs-20_x"]
+
+[phases.install]
+cmds = [
+  "cd template/app && npm install"
+]
+
+[phases.build]
+cmds = [
+  "cd template/app && npx --yes @wasp.sh/wasp-cli-linux-x64-glibc@0.25.0 build"
+]
+
+[start]
+cmd = "cd template/app/.wasp/build && npm start"
