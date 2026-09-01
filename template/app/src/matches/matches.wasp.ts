@@ -9,7 +9,6 @@ import {
   deleteMatch,
   getMatch,
   getMatches,
-  getReferees,
   joinMatch,
   leaveMatch,
   updateMatch,
@@ -33,10 +32,6 @@ export const matchesSpec = [
     "/matches/:id",
     page(MatchDetailPage, { authRequired: true }),
   ),
-
-  query(getReferees, {
-    entities: ["Referee"],
-  }),
 
   query(getMatches, {
     entities: ["Match", "MatchPlayer"],

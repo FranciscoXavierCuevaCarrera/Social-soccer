@@ -10,13 +10,6 @@ type BaseMatchesContext = {
   };
 };
 
-type RefereeContext = {
-  user?: User;
-  entities: {
-    Referee: PrismaClient["referee"];
-  };
-};
-
 type CreateMatchContext = {
   user?: User;
   entities: {
@@ -24,18 +17,6 @@ type CreateMatchContext = {
     MatchPlayer: PrismaClient["matchPlayer"];
     Referee: PrismaClient["referee"];
   };
-};
-
-export const getReferees = async (_args: void, context: RefereeContext) => {
-  if (!context.user) {
-    throw new HttpError(401, "Usuario no autenticado");
-  }
-
-  return context.entities.Referee.findMany({
-    orderBy: {
-      fullName: "asc",
-    },
-  });
 };
 
 export const getMatches = async (_args: void, context: BaseMatchesContext) => {
