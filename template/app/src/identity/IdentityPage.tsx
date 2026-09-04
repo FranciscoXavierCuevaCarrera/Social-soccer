@@ -38,6 +38,130 @@ type ProfileForm = {
   photoUrl: string;
 };
 
+/**
+ * Detecta URLs de almacenamiento que no representan un S3 real.
+ *
+ * En desarrollo Wasp puede trabajar con valores dummy/mock.
+ * En esos casos NO debemos permitir que el navegador intente
+ * hacer un POST contra dummy-bucket.s3.amazonaws.com.
+ */
+function isMockUploadUrl(url: string): boolean {
+  const normalizedUrl = url.trim().toLowerCase();
+
+  return (
+    normalizedUrl.startsWith("mock://") ||
+    normalizedUrl.includes("dummy-bucket") ||
+    normalizedUrl.includes("your-bucket-name")
+  );
+}
+
+/**
+ * Comprime una imagen para poder utilizarla como Data URL durante
+ * el desarrollo cuando todavía no existe un almacenamiento S3 real.
+ *
+ * El objetivo es mantener la imagen visualmente adecuada para una
+ * fotografía de perfil, pero evitar que updatePlayerProfile reciba
+ * una petición demasiado grande.
+ */
+async function compressImageForProfile(file: File): Promise<string> {
+  const originalDataUrl = await readFileAsDataUrl(file);
+
+  const image = new Image();
+
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () =>
+      reject(new Error("No se pudo procesar la fotografía seleccionada."));
+    image.src = originalDataUrl;
+  });
+
+  const maxWidth = 640;
+  const maxHeight = 800;
+
+  let width = image.naturalWidth;
+  let height = image.naturalHeight;
+
+  if (!width || !height) {
+    throw new Error("La fotografía seleccionada no tiene dimensiones válidas.");
+  }
+
+  const scale = Math.min(
+    1,
+    maxWidth / width,
+    maxHeight / height,
+  );
+
+  width = Math.max(1, Math.round(width * scale));
+  height = Math.max(1, Math.round(height * scale));
+
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("No se pudo preparar la fotografía.");
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+
+  context.drawImage(image, 0, 0, width, height);
+
+  /*
+   * Intentamos mantener el Data URL por debajo de aproximadamente
+   * 100 KB. Esto deja margen para el resto del JSON de la petición.
+   *
+   * Primero reducimos calidad y, si todavía es demasiado grande,
+   * reducimos progresivamente las dimensiones.
+   */
+  let currentWidth = width;
+  let currentHeight = height;
+  let quality = 0.72;
+  let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+  const maxDataUrlLength = 95_000;
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    if (dataUrl.length <= maxDataUrlLength) {
+      break;
+    }
+
+    if (quality > 0.45) {
+      quality -= 0.07;
+    } else {
+      currentWidth = Math.max(320, Math.round(currentWidth * 0.85));
+      currentHeight = Math.max(400, Math.round(currentHeight * 0.85));
+
+      canvas.width = currentWidth;
+      canvas.height = currentHeight;
+
+      context.drawImage(image, 0, 0, currentWidth, currentHeight);
+
+      quality = 0.62;
+    }
+
+    dataUrl = canvas.toDataURL("image/jpeg", quality);
+  }
+
+  if (dataUrl.length > maxDataUrlLength) {
+    /*
+     * Último intento con dimensiones pequeñas.
+     * Esto evita volver a producir un HTTP 413 incluso con
+     * fotografías muy complejas.
+     */
+    const finalWidth = Math.min(currentWidth, 400);
+    const finalHeight = Math.min(currentHeight, 500);
+
+    canvas.width = finalWidth;
+    canvas.height = finalHeight;
+
+    context.drawImage(image, 0, 0, finalWidth, finalHeight);
+
+    dataUrl = canvas.toDataURL("image/jpeg", 0.55);
+  }
+
+  return dataUrl;
+}
+
 export function IdentityPage() {
   const {
     data: playerProfile,
@@ -125,6 +249,7 @@ export function IdentityPage() {
 
     try {
       setPhotoError("");
+      setSaveError("");
       setIsUploadingPhoto(true);
       setUploadProgressPercent(0);
 
@@ -137,59 +262,112 @@ export function IdentityPage() {
         throw new Error("La foto debe estar en formato JPG o PNG.");
       }
 
-      const { s3UploadUrl, s3UploadFields, s3Key } = await createFileUploadUrl({
-        fileType: validatedFile.type,
-        fileName: validatedFile.name,
-      });
-
-      const uploadResult = await uploadFileWithProgress({
-        file: validatedFile,
-        s3UploadUrl,
-        s3UploadFields,
-        setUploadProgressPercent,
-      });
-
-      let finalPhotoUrl = "";
-      if (
-        uploadResult &&
-        typeof uploadResult === "object" &&
-        "dataUrl" in uploadResult &&
-        typeof (uploadResult as { dataUrl?: string }).dataUrl === "string"
-      ) {
-        finalPhotoUrl = (uploadResult as { dataUrl: string }).dataUrl;
-      }
-
-      try {
-        await addFileToDb({
-          s3Key,
+      /*
+       * Solicitamos al backend la información de subida.
+       */
+      const { s3UploadUrl, s3UploadFields, s3Key } =
+        await createFileUploadUrl({
           fileType: validatedFile.type,
           fileName: validatedFile.name,
         });
 
-        if (!finalPhotoUrl) {
-          const signedUrl = await getDownloadFileSignedURL({ s3Key });
-          if (
-            signedUrl &&
-            !signedUrl.includes("your-bucket-name") &&
-            !signedUrl.includes("dummy-bucket")
-          ) {
-            finalPhotoUrl = signedUrl;
-          }
+      let finalPhotoUrl = "";
+
+      /*
+       * ============================================================
+       * DESARROLLO / S3 MOCK
+       * ============================================================
+       *
+       * Si todavía no existe un S3 real, NO hacemos ningún POST
+       * contra dummy-bucket.
+       *
+       * En su lugar comprimimos la fotografía antes de guardarla
+       * como Data URL.
+       */
+      if (isMockUploadUrl(s3UploadUrl)) {
+        setUploadProgressPercent(20);
+
+        finalPhotoUrl = await compressImageForProfile(validatedFile);
+
+        setUploadProgressPercent(100);
+      } else {
+        /*
+         * ==========================================================
+         * PRODUCCIÓN / S3 REAL
+         * ==========================================================
+         *
+         * Cuando configuremos AWS S3, este flujo seguirá siendo
+         * utilizado.
+         */
+        const uploadResult = await uploadFileWithProgress({
+          file: validatedFile,
+          s3UploadUrl,
+          s3UploadFields,
+          setUploadProgressPercent,
+        });
+
+        /*
+         * Algunos flujos pueden devolver directamente un Data URL.
+         */
+        if (
+          uploadResult &&
+          typeof uploadResult === "object" &&
+          "dataUrl" in uploadResult &&
+          typeof (uploadResult as { dataUrl?: string }).dataUrl === "string"
+        ) {
+          finalPhotoUrl = (uploadResult as { dataUrl: string }).dataUrl;
         }
-      } catch (dbErr) {
-        console.warn("Seguimiento de archivo en DB omitido:", dbErr);
+
+        /*
+         * Registramos el archivo únicamente cuando existe
+         * almacenamiento real.
+         */
+        try {
+          await addFileToDb({
+            s3Key,
+            fileType: validatedFile.type,
+            fileName: validatedFile.name,
+          });
+
+          if (!finalPhotoUrl) {
+            const signedUrl = await getDownloadFileSignedURL({ s3Key });
+
+            if (
+              signedUrl &&
+              !isMockUploadUrl(signedUrl) &&
+              !signedUrl.startsWith("data:")
+            ) {
+              finalPhotoUrl = signedUrl;
+            }
+          }
+        } catch (dbErr) {
+          console.warn("Seguimiento de archivo en DB omitido:", dbErr);
+        }
+
+        /*
+         * Último recurso.
+         *
+         * Si por alguna razón el flujo real no entregó una URL,
+         * utilizamos una versión comprimida en lugar del archivo
+         * original para evitar peticiones enormes.
+         */
+        if (!finalPhotoUrl) {
+          finalPhotoUrl = await compressImageForProfile(validatedFile);
+        }
       }
 
-      if (!finalPhotoUrl) {
-        finalPhotoUrl = await readFileAsDataUrl(validatedFile);
-      }
-
+      /*
+       * La fotografía queda inmediatamente visible en el formulario.
+       *
+       * Todavía no se actualiza PostgreSQL hasta pulsar Guardar.
+       */
       setForm((current) => ({
         ...current,
         photoUrl: finalPhotoUrl,
       }));
 
       setSaved(false);
+      setPhotoError("");
     } catch (error) {
       console.error("Error al subir la foto:", error);
 
@@ -201,7 +379,11 @@ export function IdentityPage() {
       setPhotoError(message);
     } finally {
       setIsUploadingPhoto(false);
-      setUploadProgressPercent(0);
+
+      setTimeout(() => {
+        setUploadProgressPercent(0);
+      }, 300);
+
       event.target.value = "";
     }
   };
@@ -513,7 +695,7 @@ export function IdentityPage() {
                       onChange={(event) =>
                         handleChange("position", event.target.value)
                       }
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-[#0B5FA5] dark:border-[#FF6B35] dark:bg-slate-800"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-[#0B5FA5] dark:border-slate-600 dark:bg-slate-800"
                     />
                   </label>
 
@@ -543,7 +725,7 @@ export function IdentityPage() {
                       <ImagePlus className="h-4 w-4" />
 
                       {isUploadingPhoto
-                        ? `Subiendo ${uploadProgressPercent}%`
+                        ? `Procesando ${uploadProgressPercent}%`
                         : "Seleccionar foto JPG o PNG"}
 
                       <input
@@ -562,7 +744,7 @@ export function IdentityPage() {
                     )}
 
                     <p className="text-muted-foreground mt-1 text-[10px]">
-                      Máximo 5 MB.
+                      Máximo 5 MB. La fotografía se optimiza automáticamente.
                     </p>
                   </div>
                 </div>
