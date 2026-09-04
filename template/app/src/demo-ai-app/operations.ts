@@ -14,7 +14,18 @@ import * as z from "zod";
 import { ensureArgsSchemaOrThrowHttpError } from "../server/validation";
 import { GeneratedSchedule, generatedScheduleSchema } from "./schedule";
 
-const openAi = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+function getOpenAiClient(): OpenAI {
+  const apiKey = env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    throw new HttpError(
+      503,
+      "La funcionalidad de IA no está configurada todavía.",
+    );
+  }
+
+  return new OpenAI({ apiKey });
+}
 
 //#region Actions
 const generateGptResponseInputSchema = z.object({
@@ -38,6 +49,7 @@ export const generateGptResponse: GenerateGptResponse<
     generateGptResponseInputSchema,
     rawArgs,
   );
+
   const tasks = await context.entities.Task.findMany({
     where: {
       user: {
@@ -46,8 +58,10 @@ export const generateGptResponse: GenerateGptResponse<
     },
   });
 
-  console.log("Calling open AI api");
+  console.log("Calling OpenAI API");
+
   const generatedSchedule = await generateScheduleWithGpt(tasks, hours);
+
   if (generatedSchedule === null) {
     throw new HttpError(
       500,
@@ -82,6 +96,7 @@ export const generateGptResponse: GenerateGptResponse<
           },
         },
       });
+
       transactions.push(decrementCredit);
     } else {
       throw new HttpError(
@@ -92,6 +107,7 @@ export const generateGptResponse: GenerateGptResponse<
   }
 
   console.log("Decrementing credits and saving response");
+
   await prisma.$transaction(transactions);
 
   return generatedSchedule;
@@ -207,6 +223,7 @@ export const getGptResponses: GetGptResponses<void, GptResponse[]> = async (
   if (!context.user) {
     throw new HttpError(401);
   }
+
   return context.entities.GptResponse.findMany({
     where: {
       user: {
@@ -223,6 +240,7 @@ export const getAllTasksByUser: GetAllTasksByUser<void, Task[]> = async (
   if (!context.user) {
     throw new HttpError(401);
   }
+
   return context.entities.Task.findMany({
     where: {
       user: {
@@ -240,13 +258,15 @@ async function generateScheduleWithGpt(
   tasks: Task[],
   hours: number,
 ): Promise<GeneratedSchedule | null> {
+  const openAi = getOpenAiClient();
+
   const parsedTasks = tasks.map(({ description, time }) => ({
     description,
     time,
   }));
 
   const completion = await openAi.chat.completions.create({
-    model: "gpt-3.5-turbo", // you can use any model here, e.g. 'gpt-3.5-turbo', 'gpt-4', etc.
+    model: "gpt-3.5-turbo",
     messages: [
       {
         role: "system",
