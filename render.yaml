@@ -10,6 +10,7 @@ services:
     buildCommand: >-
       npm install -g @wasp.sh/wasp-cli@0.25.0 &&
       export PATH="$(npm prefix -g)/bin:$PATH" &&
+      wasp install &&
       wasp build &&
       cd .wasp/out/server &&
       npm install &&
@@ -83,6 +84,7 @@ services:
     buildCommand: >-
       npm install -g @wasp.sh/wasp-cli@0.25.0 &&
       export PATH="$(npm prefix -g)/bin:$PATH" &&
+      wasp install &&
       wasp build &&
       npx vite build
 
