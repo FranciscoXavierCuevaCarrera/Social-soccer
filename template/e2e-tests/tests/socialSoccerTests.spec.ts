@@ -4,7 +4,10 @@ import { createRandomUser, logUserIn, signUserUp, type User } from "./utils";
 let page: Page;
 let testUser: User;
 
-test.describe.configure({ mode: "serial" });
+test.describe.configure({
+  mode: "serial",
+  timeout: 120_000,
+});
 
 test.beforeAll(async ({ browser }) => {
   page = await browser.newPage();

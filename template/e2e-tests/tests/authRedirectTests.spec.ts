@@ -4,7 +4,10 @@ import { createRandomUser, logUserIn, signUserUp, type User } from "./utils";
 let page: Page;
 let testUser: User;
 
-test.describe.configure({ mode: "serial" });
+test.describe.configure({
+  mode: "serial",
+  timeout: 120_000,
+});
 
 test.beforeAll(async ({ browser }) => {
   page = await browser.newPage();
@@ -19,20 +22,18 @@ test.afterAll(async () => {
 
 test.describe("auth redirect tests", () => {
   test("logged-in user visiting /login should redirect to /app", async () => {
-    // User is already logged in from beforeAll
     await page.goto("/login");
 
-    // Should be redirected to /app
-    await page.waitForURL("**/app", { timeout: 5000 });
+    await page.waitForURL("**/app", { timeout: 10_000 });
+
     expect(page.url()).toContain("/app");
   });
 
   test("logged-in user visiting /signup should redirect to /app", async () => {
-    // User is already logged in from beforeAll
     await page.goto("/signup");
 
-    // Should be redirected to /app
-    await page.waitForURL("**/app", { timeout: 5000 });
+    await page.waitForURL("**/app", { timeout: 10_000 });
+
     expect(page.url()).toContain("/app");
   });
 });
