@@ -12,19 +12,26 @@ const DEFAULT_PASSWORD = "password123";
 export const logUserIn = async ({ page, user }: { page: Page; user: User }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
 
-  await page.fill('input[name="username"]', user.username);
-  await page.fill('input[name="password"]', DEFAULT_PASSWORD);
+  const usernameInput = page.locator('input[name="username"]');
+  const passwordInput = page.locator('input[name="password"]');
+  const loginButton = page.getByRole("button", { name: "Log in", exact: true });
 
-  const clickLogin = page.click('button:has-text("Log in")');
+  await expect(usernameInput).toBeVisible();
+  await expect(passwordInput).toBeVisible();
+  await expect(loginButton).toBeVisible();
+  await expect(loginButton).toBeEnabled();
 
-  await Promise.all([
-    page
-      .waitForResponse((response) => {
-        return response.url().includes("login") && response.status() === 200;
-      })
-      .catch((err) => console.error(err.message)),
-    clickLogin,
-  ]);
+  await usernameInput.fill(user.username);
+  await passwordInput.fill(DEFAULT_PASSWORD);
+
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/auth/username/login") &&
+      response.status() === 200,
+  );
+
+  await loginButton.click();
+  await loginResponsePromise;
 
   await page.waitForURL(/.*(app|matches)/);
 };
@@ -41,6 +48,7 @@ export const signUserUp = async ({
   await page.evaluate(() => {
     try {
       const sessionId = localStorage.getItem("wasp:sessionId");
+
       if (sessionId) {
         localStorage.removeItem("wasp:sessionId");
       }
@@ -49,19 +57,29 @@ export const signUserUp = async ({
     }
   });
 
-  await page.fill('input[name="username"]', user.username);
-  await page.fill('input[name="password"]', DEFAULT_PASSWORD);
+  const usernameInput = page.locator('input[name="username"]');
+  const passwordInput = page.locator('input[name="password"]');
+  const signupButton = page.getByRole("button", {
+    name: "Sign up",
+    exact: true,
+  });
 
-  const clickSignup = page.click('button:has-text("Sign up")');
+  await expect(usernameInput).toBeVisible();
+  await expect(passwordInput).toBeVisible();
+  await expect(signupButton).toBeVisible();
+  await expect(signupButton).toBeEnabled();
 
-  await Promise.all([
-    page
-      .waitForResponse((response) => {
-        return response.url().includes("signup") && response.status() === 200;
-      })
-      .catch((err) => console.error(err.message)),
-    clickSignup,
-  ]);
+  await usernameInput.fill(user.username);
+  await passwordInput.fill(DEFAULT_PASSWORD);
+
+  const signupResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/auth/username/signup") &&
+      response.status() === 200,
+  );
+
+  await signupButton.click();
+  await signupResponsePromise;
 };
 
 export const createRandomUser = () => {
@@ -106,6 +124,7 @@ export const makeStripePayment = async ({
   await page.getByPlaceholder("Full name on card").fill("Test User");
   const countrySelect = page.getByLabel("Country or region");
   await countrySelect.selectOption("Germany");
+
   // This is a weird edge case where the `payBtn` assertion tests pass, but the button click still isn't registered.
   // That's why we wait for stripe responses below to finish loading before clicking the button.
   await page.waitForResponse(
