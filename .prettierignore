@@ -17,3 +17,6 @@ opensaas-sh/blog/scripts/
 
 # UTF-16 release metadata
 wasp-release.json
+
+# Playwright test results.
+**/test-results/

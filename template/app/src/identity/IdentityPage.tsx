@@ -85,11 +85,7 @@ async function compressImageForProfile(file: File): Promise<string> {
     throw new Error("La fotografía seleccionada no tiene dimensiones válidas.");
   }
 
-  const scale = Math.min(
-    1,
-    maxWidth / width,
-    maxHeight / height,
-  );
+  const scale = Math.min(1, maxWidth / width, maxHeight / height);
 
   width = Math.max(1, Math.round(width * scale));
   height = Math.max(1, Math.round(height * scale));
@@ -265,11 +261,10 @@ export function IdentityPage() {
       /*
        * Solicitamos al backend la información de subida.
        */
-      const { s3UploadUrl, s3UploadFields, s3Key } =
-        await createFileUploadUrl({
-          fileType: validatedFile.type,
-          fileName: validatedFile.name,
-        });
+      const { s3UploadUrl, s3UploadFields, s3Key } = await createFileUploadUrl({
+        fileType: validatedFile.type,
+        fileName: validatedFile.name,
+      });
 
       let finalPhotoUrl = "";
 

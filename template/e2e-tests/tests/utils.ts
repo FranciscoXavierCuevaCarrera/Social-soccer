@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 export type User = {
   id?: number;
-  email: string;
+  username: string;
   password?: string;
 };
 
@@ -12,7 +12,7 @@ const DEFAULT_PASSWORD = "password123";
 export const logUserIn = async ({ page, user }: { page: Page; user: User }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
 
-  await page.fill('input[name="email"]', user.email);
+  await page.fill('input[name="username"]', user.username);
   await page.fill('input[name="password"]', DEFAULT_PASSWORD);
 
   const clickLogin = page.click('button:has-text("Log in")');
@@ -49,7 +49,7 @@ export const signUserUp = async ({
     }
   });
 
-  await page.fill('input[name="email"]', user.email);
+  await page.fill('input[name="username"]', user.username);
   await page.fill('input[name="password"]', DEFAULT_PASSWORD);
 
   const clickSignup = page.click('button:has-text("Sign up")');
@@ -65,8 +65,9 @@ export const signUserUp = async ({
 };
 
 export const createRandomUser = () => {
-  const email = `${randomUUID()}@test.com`;
-  return { email, password: DEFAULT_PASSWORD } as User;
+  const username = `test_${randomUUID().replace(/-/g, "").slice(0, 12)}`;
+
+  return { username, password: DEFAULT_PASSWORD } as User;
 };
 
 const getNextYearLastTwoDigits = () => {

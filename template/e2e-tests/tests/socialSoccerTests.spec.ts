@@ -20,53 +20,100 @@ test.afterAll(async () => {
 test.describe("Social Soccer MVP E2E Tests", () => {
   test("User lands on /app dashboard after login", async () => {
     await page.goto("/app");
+
     await expect(page.getByText("Bienvenido a Social Soccer")).toBeVisible();
-    await expect(page.getByText("Partidos")).toBeVisible();
-    await expect(page.getByText("Mi Perfil")).toBeVisible();
-    await expect(page.getByText("Estadísticas")).toBeVisible();
-    await expect(page.getByText("Finanzas")).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: "Partidos", exact: true }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: "Mi Perfil", exact: true }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: "Estadísticas", exact: true }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", { name: "Finanzas", exact: true }),
+    ).toBeVisible();
   });
 
   test("User can access /matches page", async () => {
     await page.goto("/matches");
+
     await expect(page.getByText("Próximos Partidos")).toBeVisible();
   });
 
   test("User can access Carnet Digital & Player Profile (/identity)", async () => {
     await page.goto("/identity");
-    await expect(page.getByText("Carnet Digital & DataWallet")).toBeVisible();
-    await expect(page.getByText("Pase Activo")).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", {
+        name: "DataWallet — Carnet Digital",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(page.getByText("Pase Autonómico Habilitado")).toBeVisible();
   });
 
   test("User can access Finanzas & Ticketing (/payments)", async () => {
     await page.goto("/payments");
+
     await expect(
-      page.getByText("Pasarela Fintech & Ticketing Digital"),
+      page.getByRole("heading", {
+        name: "Fintech & Ticketing Digital",
+        exact: true,
+      }),
     ).toBeVisible();
-    await expect(page.getByText("Historial de Pagos")).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", {
+        name: "Historial Transaccional Transparente",
+        exact: true,
+      }),
+    ).toBeVisible();
   });
 
   test("User can access Stats and submit Referee Rating with required comment for low rating (/stats)", async () => {
     await page.goto("/stats");
-    await expect(
-      page.getByText("Gamificación & Estadísticas Individuales"),
-    ).toBeVisible();
-    await expect(page.getByText("Puntuación Fair Play")).toBeVisible();
 
-    // Verify Referee Rating form is present
     await expect(
-      page.getByText("Evaluación Arbitral Post-Partido"),
+      page.getByRole("heading", {
+        name: "Gamificación & Estadísticas Individuales",
+        exact: true,
+      }),
     ).toBeVisible();
 
-    // Select 1 star (requires comment)
-    const starButtons = page.locator('form button[type="button"]');
-    if ((await starButtons.count()) >= 5) {
-      await starButtons.nth(0).click();
-      await expect(
-        page.getByText(
-          "Comentario * (el comentario es obligatorio para calificaciones menores a 3 estrellas):",
-        ),
-      ).toBeVisible();
-    }
+    await expect(
+      page.getByRole("heading", {
+        name: "Puntuación Fair Play (Juego Limpio)",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole("heading", {
+        name: "Evaluación Arbitral Post-Partido",
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    const starButtons = page
+      .locator('form button[type="button"]')
+      .filter({ has: page.locator("svg") });
+
+    await expect(starButtons).toHaveCount(5);
+
+    await starButtons.nth(0).click();
+
+    await expect(
+      page.getByText(
+        "Comentario * (el comentario es obligatorio para calificaciones menores a 3 estrellas):",
+        { exact: true },
+      ),
+    ).toBeVisible();
   });
 });
