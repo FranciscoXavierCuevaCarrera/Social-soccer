@@ -4,12 +4,11 @@ import { createRandomUser, logUserIn, signUserUp, type User } from "./utils";
 let page: Page;
 let testUser: User;
 
-test.describe.configure({
-  mode: "serial",
-  timeout: 120_000,
-});
+test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
+  test.setTimeout(120_000);
+
   page = await browser.newPage();
   testUser = createRandomUser();
   await signUserUp({ page, user: testUser });
@@ -17,7 +16,7 @@ test.beforeAll(async ({ browser }) => {
 });
 
 test.afterAll(async () => {
-  await page.close();
+  page.close();
 });
 
 test.describe("auth redirect tests", () => {
